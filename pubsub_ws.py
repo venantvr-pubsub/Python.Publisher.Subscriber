@@ -1,7 +1,7 @@
-# pubsub_ws.py
-
+import json
 import sqlite3
 import time
+from os import path
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit, join_room
@@ -15,36 +15,17 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 # --- Database init
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topic TEXT,
-            message TEXT,
-            timestamp REAL
-        )
-    """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS subscriptions (
-            sid TEXT,
-            consumer TEXT,
-            topic TEXT,
-            connected_at REAL,
-            PRIMARY KEY (sid, topic)
-        )
-    """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS consumptions (
-            consumer TEXT,
-            topic TEXT,
-            message TEXT,
-            timestamp REAL
-        )
-    """)
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
 
+        # Check if messages table exists
+        c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='messages'")
+        if not c.fetchone():
+            print("[INIT DB] messages table missing, running migration script...")
+            migration_script = "migrations/001_add_message_id_and_producer.sql"
+            if path.exists(migration_script):
+                with open(migration_script) as f:
+                    conn.executescript(f.read())
 
 init_db()
 
@@ -84,29 +65,36 @@ class Broker:
                 "topic": topic
             })
 
-    def save_message(self, topic, message):
+    def save_message(self, topic, message_id, message, producer):
         conn = sqlite3.connect(self.db_name)
         c = conn.cursor()
         c.execute("""
-            INSERT INTO messages (topic, message, timestamp)
-            VALUES (?, ?, ?)
-        """, (topic, message, time.time()))
+            INSERT INTO messages (topic, message_id, message, producer, timestamp)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            topic,
+            message_id,
+            json.dumps(message),
+            producer,
+            time.time()
+        ))
         conn.commit()
         conn.close()
 
-    def save_consumption(self, consumer, topic, message):
+    def save_consumption(self, consumer, topic, message_id, message):
         conn = sqlite3.connect(self.db_name)
         c = conn.cursor()
         c.execute("""
-            INSERT INTO consumptions (consumer, topic, message, timestamp)
-            VALUES (?, ?, ?, ?)
-        """, (consumer, topic, message, time.time()))
+            INSERT INTO consumptions (consumer, topic, message_id, message, timestamp)
+            VALUES (?, ?, ?, ?, ?)
+        """, (consumer, topic, message_id, json.dumps(message), time.time()))
         conn.commit()
         conn.close()
 
         socketio.emit("new_consumption", {
             "consumer": consumer,
             "topic": topic,
+            "message_id": message_id,
             "message": message,
             "timestamp": time.time()
         })
@@ -128,7 +116,7 @@ class Broker:
         conn = sqlite3.connect(self.db_name)
         c = conn.cursor()
         c.execute("""
-            SELECT consumer, topic, message, timestamp FROM consumptions
+            SELECT consumer, topic, message_id, message, timestamp FROM consumptions
             ORDER BY timestamp DESC
         """)
         rows = c.fetchall()
@@ -137,8 +125,9 @@ class Broker:
             {
                 "consumer": r[0],
                 "topic": r[1],
-                "message": r[2],
-                "timestamp": r[3]
+                "message_id": r[2],
+                "message": json.loads(r[3]),
+                "timestamp": r[4]
             }
             for r in rows
         ]
@@ -153,21 +142,26 @@ broker = Broker(DB_NAME)
 def publish():
     data = request.json
     topic = data.get("topic")
+    message_id = data.get("message_id")
     message = data.get("message")
+    producer = data.get("producer")
 
-    broker.save_message(topic, message)
+    broker.save_message(
+        topic=topic,
+        message_id=message_id,
+        message=message,
+        producer=producer
+    )
 
-    # Broadcast to topic room
-    socketio.emit("message", {
+    payload = {
         "topic": topic,
-        "message": message
-    }, to=topic)
+        "message_id": message_id,
+        "message": message,
+        "producer": producer
+    }
 
-    # Also send to wildcard room
-    socketio.emit("message", {
-        "topic": topic,
-        "message": message
-    }, to="*")
+    socketio.emit("message", payload, to=topic)
+    socketio.emit("message", payload, to="*")
 
     return jsonify({"status": "ok"})
 
@@ -206,6 +200,16 @@ def handle_subscribe(data):
         }, to=sid)
 
 
+@socketio.on("consumed")
+def handle_consumed(data):
+    consumer = data.get("consumer")
+    topic = data.get("topic")
+    message_id = data.get("message_id")
+    message = data.get("message")
+
+    broker.save_consumption(consumer, topic, message_id, message)
+
+
 @socketio.on("disconnect")
 def handle_disconnect():
     # noinspection PyUnresolvedReferences
@@ -213,14 +217,5 @@ def handle_disconnect():
     broker.unregister_client(sid)
 
 
-@socketio.on("consumed")
-def handle_consumed(data):
-    consumer = data.get("consumer")
-    topic = data.get("topic")
-    message = data.get("message")
-    if consumer and topic and message:
-        broker.save_consumption(consumer, topic, message)
-
-
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000)

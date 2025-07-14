@@ -1,3 +1,5 @@
+import uuid
+
 import socketio
 
 
@@ -36,24 +38,41 @@ class PubSubClient:
 
     def on_message(self, data):
         topic = data["topic"]
+        message_id = data.get("message_id")
         message = data["message"]
-        print(f"[{self.consumer}] Received on topic [{topic}]: {message}")
+        producer = data.get("producer")
 
-        # Call custom handler if exists
+        print(f"[{self.consumer}] Received on topic [{topic}]: {message} (from {producer}, ID={message_id})")
+
         if topic in self.handlers:
             self.handlers[topic](message)
         else:
             print(f"[{self.consumer}] No handler for topic {topic}.")
 
-        # Notify server we consumed it
+        # Notify consumption
         self.sio.emit("consumed", {
             "consumer": self.consumer,
             "topic": topic,
+            "message_id": message_id,
             "message": message
         })
 
     def on_disconnect(self):
-        print(f"[{self.consumer}] Disconnected from server.")
+        print(f"[{self.consumer}] Disconnected.")
+
+    def publish(self, topic, message, producer):
+        # Producer generates its own message_id
+        message_id = str(uuid.uuid4())
+
+        payload = {
+            "topic": topic,
+            "message_id": message_id,
+            "message": message,
+            "producer": producer
+        }
+
+        # Publish through HTTP is recommended, but we can also emit via WS
+        self.sio.emit("publish", payload)
 
     def start(self):
         self.sio.connect(self.url)
