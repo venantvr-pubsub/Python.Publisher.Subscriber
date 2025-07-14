@@ -13,7 +13,6 @@ app.config["SECRET_KEY"] = "secret!"
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 
-# --- Database init
 def init_db():
     with sqlite3.connect(DB_NAME) as conn:
         c = conn.cursor()
@@ -27,10 +26,10 @@ def init_db():
                 with open(migration_script) as f:
                     conn.executescript(f.read())
 
+
 init_db()
 
 
-# --- Broker class
 class Broker:
     def __init__(self, db_name):
         self.db_name = db_name
@@ -136,8 +135,6 @@ class Broker:
 broker = Broker(DB_NAME)
 
 
-# --- HTTP Routes
-
 @app.route("/publish", methods=["POST"])
 def publish():
     data = request.json
@@ -180,8 +177,6 @@ def consumptions():
 def serve_client():
     return send_from_directory(".", "client.html")
 
-
-# --- WebSocket events
 
 @socketio.on("subscribe")
 def handle_subscribe(data):

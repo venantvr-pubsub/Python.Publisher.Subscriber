@@ -6,6 +6,7 @@ import socketio
 BASE_URL = "http://localhost:5000"
 
 
+# noinspection PyMethodMayBeStatic
 class PubSubClient:
     def __init__(self, consumer_name, topics):
         self.sio = socketio.Client(reconnection=True)
