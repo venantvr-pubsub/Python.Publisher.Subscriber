@@ -153,6 +153,7 @@ class Broker:
             "timestamp": time.time()
         })
 
+    # noinspection PyShadowingNames
     def get_clients(self) -> List[Dict[str, Any]]:
         """
         Retrieve the list of connected clients.
@@ -170,6 +171,7 @@ class Broker:
         logger.info(f"Retrieved {len(clients)} connected clients")
         return clients
 
+    # noinspection PyShadowingNames
     def get_messages(self) -> List[Dict[str, Any]]:
         """
         Retrieve the list of published messages.
@@ -197,6 +199,7 @@ class Broker:
         logger.info(f"Retrieved {len(messages)} messages")
         return messages
 
+    # noinspection PyShadowingNames
     def get_consumptions(self) -> List[Dict[str, Any]]:
         """
         Retrieve the list of consumption events.
