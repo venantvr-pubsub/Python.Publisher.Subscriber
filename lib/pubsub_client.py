@@ -1,6 +1,7 @@
-import uuid
-
+import requests
 import socketio
+
+from lib.pubsub_message import PubSubMessage
 
 
 class PubSubClient:
@@ -10,7 +11,7 @@ class PubSubClient:
         :param consumer: Consumer name (e.g. 'alice')
         :param topics: List of topics to subscribe to
         """
-        self.url = url
+        self.url = url.rstrip("/")
         self.consumer = consumer
         self.topics = topics
         self.handlers = {}  # topic → function
@@ -61,18 +62,13 @@ class PubSubClient:
         print(f"[{self.consumer}] Disconnected.")
 
     def publish(self, topic, message, producer):
-        # Producer generates its own message_id
-        message_id = str(uuid.uuid4())
-
-        payload = {
-            "topic": topic,
-            "message_id": message_id,
-            "message": message,
-            "producer": producer
-        }
-
-        # Publish through HTTP is recommended, but we can also emit via WS
-        self.sio.emit("publish", payload)
+        """
+        Publish a message via HTTP POST to the pubsub backend.
+        """
+        msg = PubSubMessage.new(topic, message, producer)
+        url = f"{self.url}/publish"
+        resp = requests.post(url, json=msg.to_dict())
+        print(f"[{self.consumer}] Published to {topic}: {resp.json()}")
 
     def start(self):
         self.sio.connect(self.url)
