@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from typing import Dict, Any
 from uuid import uuid4
 
 
@@ -6,17 +7,31 @@ from uuid import uuid4
 class PubSubMessage:
     topic: str
     message_id: str
-    message: dict
+    message: Any
     producer: str
 
     @staticmethod
-    def new(topic: str, message: dict, producer: str) -> "PubSubMessage":
+    def new(topic: str, message: Any, producer: str, message_id: str = None) -> "PubSubMessage":
+        """
+        Create a new PubSubMessage instance.
+
+        :param topic: Topic of the message
+        :param message: Message content
+        :param producer: Producer name
+        :param message_id: Unique message ID (optional, defaults to UUID)
+        :return: PubSubMessage instance
+        """
         return PubSubMessage(
             topic=topic,
-            message_id=str(uuid4()),
+            message_id=message_id or str(uuid4()),
             message=message,
             producer=producer
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the message to a dictionary.
+
+        :return: Dictionary representation of the message
+        """
         return asdict(self)
