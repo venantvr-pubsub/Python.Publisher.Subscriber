@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 
 import requests
 import socketio
+from socketio import exceptions
 
 # Configure logging for debugging
 logging.basicConfig(level=logging.INFO)
@@ -34,14 +35,19 @@ class PubSubClient:
         self.sio.on("new_message", self.on_new_message)
 
     def connect(self) -> None:
-        """Connect to the Socket.IO server and subscribe to topics."""
         logger.info(f"Attempting to connect as {self.consumer_name} to {BASE_URL}")
-        self.sio.connect(BASE_URL)
-        self.sio.emit("subscribe", {
-            "consumer": self.consumer_name,
-            "topics": self.topics
-        })
-        logger.info(f"Connected as {self.consumer_name}, subscribed to {self.topics}")
+        try:
+            self.sio.connect(BASE_URL)
+            self.sio.emit("subscribe", {
+                "consumer": self.consumer_name,
+                "topics": self.topics
+            })
+            logger.info(f"Connected as {self.consumer_name}, subscribed to {self.topics}")
+        except exceptions.ConnectionError as e:
+            logger.error(f"Failed to connect to server: {e}")
+            # Optionally, implement retry logic or exit
+        except Exception as e:
+            logger.error(f"An unexpected error occurred during connection: {e}")
 
     def on_message(self, data: Dict[str, Any]) -> None:
         """Handle incoming messages."""
@@ -85,3 +91,9 @@ class PubSubClient:
     def run_forever(self) -> None:
         """Keep the client running indefinitely."""
         self.sio.wait()
+
+    def disconnect(self) -> None:
+        """Disconnect from the Socket.IO server."""
+        if self.sio.connected:
+            self.sio.disconnect()
+            logger.info(f"Disconnected {self.consumer_name} from server.")

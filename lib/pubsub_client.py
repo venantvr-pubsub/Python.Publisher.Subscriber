@@ -12,6 +12,7 @@ from lib.pubsub_message import PubSubMessage
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class PubSubClient:
     def __init__(self, url: str, consumer: str, topics: List[str]):
         """
@@ -126,8 +127,16 @@ class PubSubClient:
         msg = PubSubMessage.new(topic, message, producer, message_id)
         url = f"{self.url}/publish"
         logger.info(f"[{self.consumer}] Publishing to {topic}: {msg.to_dict()}")
-        resp = requests.post(url, json=msg.to_dict())
-        logger.info(f"[{self.consumer}] Publish response: {resp.json()}")
+        try:
+            resp = requests.post(url, json=msg.to_dict())
+            resp.raise_for_status()  # Raises HTTPError for bad responses (4xx or 5xx)
+            logger.info(f"[{self.consumer}] Publish response: {resp.json()}")
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"[{self.consumer}] Connection error during publish: {e}")
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"[{self.consumer}] HTTP error during publish: {e.response.status_code} - {e.response.text}")
+        except Exception as e:
+            logger.error(f"[{self.consumer}] An unexpected error occurred during publish: {e}")
 
     def start(self) -> None:
         """Start the client and connect to the server."""

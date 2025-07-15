@@ -55,20 +55,29 @@ class Broker:
         :param consumer: Consumer name
         :param topic: Topic to subscribe to
         """
-        conn = sqlite3.connect(self.db_name)
-        c = conn.cursor()
-        c.execute("""
-            INSERT OR REPLACE INTO subscriptions (sid, consumer, topic, connected_at)
-            VALUES (?, ?, ?, ?)
-        """, (sid, consumer, topic, time.time()))
-        conn.commit()
-        conn.close()
-        logger.info(f"Registered subscription: {consumer} to {topic} (SID: {sid})")
+        conn = None
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            c.execute("""
+                INSERT OR REPLACE INTO subscriptions (sid, consumer, topic, connected_at)
+                VALUES (?, ?, ?, ?)
+            """, (sid, consumer, topic, time.time()))
+            conn.commit()
+            conn.close()
+            logger.info(f"Registered subscription: {consumer} to {topic} (SID: {sid})")
 
-        socketio.emit("new_client", {
-            "consumer": consumer,
-            "topic": topic
-        })
+            socketio.emit("new_client", {
+                "consumer": consumer,
+                "topic": topic
+            })
+        except sqlite3.Error as e:
+            logger.error(f"Database error during subscription registration: {e}")
+            if conn:
+                conn.rollback()  # Rollback on error
+        finally:
+            if conn:
+                conn.close()
 
     def unregister_client(self, sid: str) -> None:
         """
@@ -261,9 +270,8 @@ def publish():
         "producer": producer
     }
 
-    socketio.emit("message", payload, to=topic)
-    socketio.emit("message", payload, to="*")
-
+    socketio.emit("message", payload, to=topic)  # Emits to clients subscribed to 'topic'
+    socketio.emit("message", payload, to="*")  # Emits to ALL connected clients
     return jsonify({"status": "ok"})
 
 
