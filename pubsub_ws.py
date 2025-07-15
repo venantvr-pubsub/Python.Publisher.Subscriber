@@ -182,6 +182,7 @@ class Broker:
         c = conn.cursor()
         c.execute("""
             SELECT topic, message_id, message, producer, timestamp FROM messages
+            WHERE message_id IS NOT NULL
             ORDER BY timestamp DESC
         """)
         rows = c.fetchall()
@@ -210,6 +211,7 @@ class Broker:
         c = conn.cursor()
         c.execute("""
             SELECT consumer, topic, message_id, message, timestamp FROM consumptions
+            WHERE message_id IS NOT NULL
             ORDER BY timestamp DESC
         """)
         rows = c.fetchall()

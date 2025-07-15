@@ -58,6 +58,8 @@ document.getElementById("connectBtn").addEventListener("click", () => {
 
     console.log(`Subscribed to topics: ${topics}`);
     refreshMessages(); // Refresh messages on connect
+    refreshClients(); // Refresh clients on connect
+    refreshConsumptions(); // Refresh consumptions on connect
   });
 
   socket.on("message", (data) => {
@@ -196,3 +198,21 @@ function refreshConsumptions() {
       console.error(`Error fetching consumptions: ${err}`);
     });
 }
+
+// Refresh tab content when switching tabs
+document.getElementById('pubSubTabs').addEventListener('shown.bs.tab', function (event) {
+  const targetTab = event.target.getAttribute('data-bs-target');
+  if (targetTab === '#received-messages') {
+    console.log('Switched to Received Messages tab');
+    // No refresh needed for list, as it updates in real-time
+  } else if (targetTab === '#clients') {
+    console.log('Switched to Clients tab');
+    refreshClients();
+  } else if (targetTab === '#messages') {
+    console.log('Switched to Messages tab');
+    refreshMessages();
+  } else if (targetTab === '#consumptions') {
+    console.log('Switched to Consumptions tab');
+    refreshConsumptions();
+  }
+});

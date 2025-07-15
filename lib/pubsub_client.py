@@ -1,4 +1,6 @@
 import logging
+import queue
+import threading
 from typing import List, Dict, Any, Callable
 
 import requests
@@ -22,10 +24,17 @@ class PubSubClient:
         self.url = url.rstrip("/")
         self.consumer = consumer
         self.topics = topics
-        self.handlers: Dict[str, Callable] = {}  # topic → function
+        self.handlers: Dict[str, Callable[[Any], None]] = {}  # topic → function
+        self.message_queue = queue.Queue()  # Queue for processing messages sequentially
+        self.running = False
 
-        # Create Socket.IO client
-        self.sio = socketio.Client()
+        # Create Socket.IO client with explicit reconnection settings
+        self.sio = socketio.Client(
+            reconnection=True,
+            reconnection_attempts=0,  # Infinite reconnection attempts
+            reconnection_delay=2000,  # Delay between reconnection attempts (ms)
+            reconnection_delay_max=10000  # Max delay for reconnection
+        )
 
         # Register generic events
         self.sio.on("connect", self.on_connect)
@@ -49,36 +58,57 @@ class PubSubClient:
             "consumer": self.consumer,
             "topics": self.topics
         })
+        if not self.running:
+            self.running = True
+            threading.Thread(target=self.process_queue, daemon=True).start()
 
     def on_message(self, data: Dict[str, Any]) -> None:
         """
-        Handle incoming messages.
+        Handle incoming messages by adding them to the queue.
 
         :param data: Message data containing topic, message_id, message, and producer
         """
-        topic = data["topic"]
-        message_id = data.get("message_id")
-        message = data["message"]
-        producer = data.get("producer")
+        logger.info(f"[{self.consumer}] Queuing message: {data}")
+        self.message_queue.put(data)
 
-        logger.info(f"[{self.consumer}] Received on topic [{topic}]: {message} (from {producer}, ID={message_id})")
+    def process_queue(self) -> None:
+        """Process messages from the queue one by one."""
+        while self.running:
+            try:
+                data = self.message_queue.get(timeout=1.0)
+                topic = data["topic"]
+                message_id = data.get("message_id")
+                message = data["message"]
+                producer = data.get("producer")
 
-        if topic in self.handlers:
-            self.handlers[topic](message)
-        else:
-            logger.warning(f"[{self.consumer}] No handler for topic {topic}.")
+                logger.info(f"[{self.consumer}] Processing message from topic [{topic}]: {message} (from {producer}, ID={message_id})")
 
-        # Notify consumption
-        self.sio.emit("consumed", {
-            "consumer": self.consumer,
-            "topic": topic,
-            "message_id": message_id,
-            "message": message
-        })
+                if topic in self.handlers:
+                    try:
+                        self.handlers[topic](message)
+                    except Exception as e:
+                        logger.error(f"[{self.consumer}] Error in handler for topic {topic}: {e}")
+                else:
+                    logger.warning(f"[{self.consumer}] No handler for topic {topic}.")
+
+                # Notify consumption
+                self.sio.emit("consumed", {
+                    "consumer": self.consumer,
+                    "topic": topic,
+                    "message_id": message_id,
+                    "message": message
+                })
+
+                self.message_queue.task_done()
+            except queue.Empty:
+                continue
+            except Exception as e:
+                logger.error(f"[{self.consumer}] Error processing message: {e}")
 
     def on_disconnect(self) -> None:
         """Handle disconnection from the server."""
-        logger.info(f"[{self.consumer}] Disconnected from server.")
+        logger.info(f"[{self.consumer}] Disconnected from server. Reconnection will be attempted automatically.")
+        self.running = False  # Stop queue processing until reconnected
 
     def on_new_message(self, data: Dict[str, Any]) -> None:
         """Handle new message events."""
