@@ -106,15 +106,14 @@ class Broker:
 
     def unregister_client(self, sid: str) -> None:
         conn = None
-        rows = []
         try:
             conn = self._get_db_connection()
             c = conn.cursor()
             c.execute("SELECT consumer, topic FROM subscriptions WHERE sid = ?", (sid,))
-            rows = c.fetchall()
+            client_data = c.fetchall()
             c.execute("DELETE FROM subscriptions WHERE sid = ?", (sid,))
             conn.commit()
-            for consumer, topic in rows:
+            for consumer, topic in client_data:
                 logger.info(f"Unregistered client: {consumer} from {topic} (SID: {sid})")
                 socketio.emit("client_disconnected", {
                     "consumer": consumer,
@@ -347,7 +346,8 @@ def handle_subscribe(data: Dict[str, Any]) -> None:
     consumer = data.get("consumer")
     topics = data.get("topics", [])
 
-    sid = request.sid
+    # noinspection PyUnresolvedReferences
+    sid = request.sid  # request.sid is dynamically added by Flask-SocketIO
 
     logger.info(f"Subscribing {consumer} to topics {topics} (SID: {sid})")
     for topic in topics:

@@ -1,14 +1,15 @@
-import pytest
 import sqlite3
+import sys
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-# Importez request et Flask pour le contexte de test
-from flask import request  # <-- NOUVEAU IMPORT
+from flask import request
+
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from pubsub_ws import app, socketio, Broker, init_db
-# Importez explicitement les gestionnaires d'événements pour les tester directement
-from pubsub_ws import handle_subscribe, handle_disconnect  # <-- NOUVEAU IMPORT
+from pubsub_ws import handle_subscribe, handle_disconnect
 
 
 # Fixtures (inchangées)
@@ -246,6 +247,7 @@ def test_socketio_consumed(socketio_test_client, test_broker):
         )
 
 
+# noinspection PyUnusedLocal
 def test_socketio_disconnect(socketio_test_client, test_broker, mocker):
     # Générez un SID arbitraire mais constant pour ce test
     test_sid = "test_socket_sid_disconnect_456"

@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Callable
 import requests
 import socketio
 
-from lib.pubsub_message import PubSubMessage
+from .pubsub_message import PubSubMessage
 
 # Configure logging for debugging
 logging.basicConfig(level=logging.INFO)

@@ -1,10 +1,14 @@
-import logging  # Importez logging
+import logging
+import sys
+from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import pytest
-import socketio
+from socketio import exceptions
 
-from client import PubSubClient, BASE_URL  # Importez le PubSubClient du fichier client.py
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+
+from client import PubSubClient, BASE_URL
 
 
 # Mock du socketio.Client
@@ -84,7 +88,7 @@ def test_pubsub_client_connect_failure(mock_sio_client, caplog):
     # Obtenez le mock de l'instance client
     mock_instance = mock_sio_client.return_value
     # Simule une ConnectionError lors de la connexion
-    mock_instance.connect.side_effect = socketio.exceptions.ConnectionError("Connection refused")
+    mock_instance.connect.side_effect = exceptions.ConnectionError("Connection refused")
 
     with caplog.at_level(logging.ERROR):  # Capture les logs d'erreur
         client.connect()
