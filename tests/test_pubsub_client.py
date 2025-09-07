@@ -1,26 +1,28 @@
 import logging
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
-import pytest
-from socketio import exceptions
+# Add src to path - needs to be before local imports
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+from unittest.mock import MagicMock, patch  # noqa: E402
 
-from client import PubSubClient, BASE_URL
+import pytest  # noqa: E402
+from socketio import exceptions  # noqa: E402
+
+from client import BASE_URL, PubSubClient  # noqa: E402
 
 
 # Mock du socketio.Client
-# On va mocker la classe socketio.Client elle-même, pas son instance directement
+# On va mocker la class socketio.Client elle-même, pas son instance directement
 # Ensuite, on accède à mock_sio_client.return_value pour mocker les méthodes de l'instance
 @pytest.fixture
 def mock_sio_client():
     """Mocke l'instance de socketio.Client utilisée par PubSubClient."""
-    with patch('client.socketio.Client') as MockClient:  # <-- Patch la classe directement dans le module client
+    with patch("client.socketio.Client") as MockClient:  # <-- Patch la class directement dans le module client
         instance = MockClient.return_value  # Ceci est le mock de l'instance qui sera créée
         instance.connected = False  # Simule l'état initial déconnecté
-        yield MockClient  # On yield le Mock de la CLASSE Client elle-même, pas son instance
+        yield MockClient  # On yield le Mock de la CLASS Client elle-même, pas son instance
 
 
 # Mock de requests.post
@@ -28,7 +30,7 @@ def mock_sio_client():
 def mock_requests_post():
     """Mocke requests.post pour les appels de publication HTTP."""
     # Patch requests.post dans le module client où il est utilisé
-    with patch('client.requests.post') as mock_post:  # <-- Patch requests.post dans le module client
+    with patch("client.requests.post") as mock_post:  # <-- Patch requests.post dans le module client
         mock_response = MagicMock()
         mock_response.json.return_value = {"status": "ok", "message_id": "test_id_returned"}
         mock_response.raise_for_status.return_value = None  # Pas d'erreurs HTTP par défaut
@@ -36,7 +38,8 @@ def mock_requests_post():
         yield mock_post
 
 
-# --- Tests pour la classe PubSubClient (du fichier client.py) ---
+# --- Tests pour la class PubSubClient (du fichier client.py) ---
+
 
 def test_pubsub_client_init(mock_sio_client):
     """Vérifie l'initialisation du client et l'enregistrement des gestionnaires."""
@@ -66,7 +69,7 @@ def test_pubsub_client_connect_success(mock_sio_client):
 
     # Obtenez le mock de l'instance client qui a été créée
     mock_instance = mock_sio_client.return_value
-    mock_instance.connected = True  # Simule une connexion réussie
+    mock_instance.connected = True  # Simule une connection réussie
 
     client.connect()
 
@@ -74,20 +77,18 @@ def test_pubsub_client_connect_success(mock_sio_client):
     mock_instance.connect.assert_called_once_with(BASE_URL)
 
     # Vérifiez que l'événement "subscribe" a été émis sur l'instance mockée
-    mock_instance.emit.assert_called_once_with(
-        "subscribe", {"consumer": consumer, "topics": topics}
-    )
+    mock_instance.emit.assert_called_once_with("subscribe", {"consumer": consumer, "topics": topics})
 
 
 def test_pubsub_client_connect_failure(mock_sio_client, caplog):
-    """Teste la méthode connect en cas d'échec de connexion."""
+    """Teste la méthode connect en cas d'échec de connection."""
     consumer = "test_charlie"
     topics = ["music"]
     client = PubSubClient(consumer, topics)
 
     # Obtenez le mock de l'instance client
     mock_instance = mock_sio_client.return_value
-    # Simule une ConnectionError lors de la connexion
+    # Simule une ConnectionError lors de la connection
     mock_instance.connect.side_effect = exceptions.ConnectionError("Connection refused")
 
     with caplog.at_level(logging.ERROR):  # Capture les logs d'erreur
@@ -129,7 +130,7 @@ def test_pubsub_client_publish(mock_requests_post):
         "topic": topic_to_publish,
         "message": message_content,
         "producer": consumer,
-        "message_id": message_id
+        "message_id": message_id,
     }
     mock_requests_post.assert_called_once_with(expected_url, json=expected_json)
 
@@ -138,7 +139,7 @@ def test_pubsub_client_publish(mock_requests_post):
 
 
 def test_pubsub_client_disconnect_connected(mock_sio_client, caplog):
-    """Teste la déconnexion quand le client est connecté."""
+    """Teste la déconnection quand le client est connecté."""
     consumer = "test_frank"
     topics = ["sports"]
     client = PubSubClient(consumer, topics)
@@ -156,7 +157,7 @@ def test_pubsub_client_disconnect_connected(mock_sio_client, caplog):
 
 
 def test_pubsub_client_disconnect_not_connected(mock_sio_client, caplog):
-    """Teste la déconnexion quand le client n'est pas connecté."""
+    """Teste la déconnection quand le client n'est pas connecté."""
     consumer = "test_grace"
     topics = ["art"]
     client = PubSubClient(consumer, topics)

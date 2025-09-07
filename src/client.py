@@ -1,7 +1,7 @@
 # client.py
 
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import requests
 import socketio
@@ -38,10 +38,7 @@ class PubSubClient:
         logger.info(f"Attempting to connect as {self.consumer_name} to {BASE_URL}")
         try:
             self.sio.connect(BASE_URL)
-            self.sio.emit("subscribe", {
-                "consumer": self.consumer_name,
-                "topics": self.topics
-            })
+            self.sio.emit("subscribe", {"consumer": self.consumer_name, "topics": self.topics})
             logger.info(f"Connected as {self.consumer_name}, subscribed to {self.topics}")
         except exceptions.ConnectionError as e:
             logger.error(f"Failed to connect to server: {e}")
@@ -79,14 +76,13 @@ class PubSubClient:
         :return: Server response
         """
         logger.info(f"Publishing to topic {topic}: {message} with ID {message_id}")
-        resp = requests.post(f"{BASE_URL}/publish", json={
-            "topic": topic,
-            "message": message,
-            "producer": self.consumer_name,
-            "message_id": message_id
-        })
+        resp = requests.post(
+            f"{BASE_URL}/publish",
+            json={"topic": topic, "message": message, "producer": self.consumer_name, "message_id": message_id},
+            timeout=10,
+        )
         logger.info(f"Publish response: {resp.json()}")
-        return resp.json()
+        return resp.json()  # type: ignore[no-any-return]
 
     def run_forever(self) -> None:
         """Keep the client running indefinitely."""

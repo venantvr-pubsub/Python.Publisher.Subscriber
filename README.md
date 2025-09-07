@@ -1,5 +1,6 @@
 # Python Publisher Subscriber
 
+<!-- markdownlint-disable MD033 -->
 <div align="center">
 
 ![Python Version](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
@@ -11,9 +12,11 @@
 ![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)
 ![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
 
-A high-performance, real-time Publisher-Subscriber system built with Flask, Flask-SocketIO, and SQLite.
+A high-performance, real-time Publisher-Subscriber system built with Flask,
+Flask-SocketIO, and SQLite.
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) •
+[Quick Start](#-quick-start) • [Contributing](#-contributing)
 
 </div>
 
@@ -21,13 +24,16 @@ A high-performance, real-time Publisher-Subscriber system built with Flask, Flas
 
 ## 🚀 Features
 
-- **Real-time Communication**: WebSocket-based pub/sub messaging with instant delivery
+- **Real-time Communication**: WebSocket-based pub/sub messaging with instant
+  delivery
 - **Multiple Topics**: Support for subscribing to multiple topics simultaneously
-- **Persistent Storage**: SQLite database for message history and consumption tracking
+- **Persistent Storage**: SQLite database for message history and consumption
+  tracking
 - **Web Interface**: Interactive web client for testing and monitoring
 - **Python Client Library**: Easy-to-use Python client for integration
 - **RESTful API**: HTTP endpoints for publishing messages
-- **Live Monitoring**: Real-time monitoring of connected clients and message consumption
+- **Live Monitoring**: Real-time monitoring of connected clients and message
+  consumption
 - **Docker Support**: Ready-to-deploy Docker configuration
 - **Comprehensive Testing**: Full test coverage with pytest
 - **Type Safety**: Full type hints and mypy validation
@@ -84,7 +90,7 @@ The server will start on `http://localhost:5000`
 
 ### 2. Publish Messages
 
-#### Using curl:
+#### Using curl
 
 ```bash
 curl -X POST http://localhost:5000/publish \
@@ -92,7 +98,7 @@ curl -X POST http://localhost:5000/publish \
      -d '{"topic": "sports", "message": "Goal scored!"}'
 ```
 
-#### Using Python:
+#### Using Python
 
 ```python
 import requests
@@ -105,7 +111,7 @@ response = requests.post(
 
 ### 3. Subscribe to Topics
 
-#### Using Python Client:
+#### Using Python Client
 
 ```python
 from pubsub import PubSubClient
@@ -130,13 +136,13 @@ client.register_handler("news", handle_news_message)
 client.start()
 ```
 
-#### Using Web Interface:
+#### Using Web Interface
 
 Open your browser at `http://localhost:5000/client.html`
 
 ## 📁 Project Structure
 
-```
+```text
 Python.Publisher.Subscriber/
 ├── src/                      # Source code
 │   ├── pubsub/              # Core library modules
@@ -281,6 +287,7 @@ Health check endpoint.
 #### Client → Server
 
 - `subscribe`: Subscribe to topics
+
   ```json
   {
     "consumer": "string",
@@ -289,6 +296,7 @@ Health check endpoint.
   ```
 
 - `publish`: Publish message via WebSocket
+
   ```json
   {
     "topic": "string",
@@ -376,7 +384,8 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for
+details.
 
 ## 🙏 Acknowledgments
 
@@ -392,7 +401,7 @@ Full documentation is available in the `docs/` directory.
 
 - **Issues**: GitHub Issues
 - **Discussions**: GitHub Discussions
-- **Email**: venantvr@gmail.com
+- **Email**: <venantvr@gmail.com>
 
 ## 🗺️ Roadmap
 
@@ -409,6 +418,7 @@ Full documentation is available in the `docs/` directory.
 
 ---
 
+<!-- markdownlint-disable MD033 -->
 <div align="center">
 Made with ❤️ by the Python Publisher Subscriber team
 </div>

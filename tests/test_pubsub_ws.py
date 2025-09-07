@@ -1,15 +1,16 @@
 import sqlite3
 import sys
 from pathlib import Path
-from unittest.mock import patch
 
-import pytest
-from flask import request
+# Add src to path - needs to be before local imports
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+from unittest.mock import patch  # noqa: E402
 
-from pubsub_ws import app, socketio, Broker, init_db
-from pubsub_ws import handle_subscribe, handle_disconnect
+import pytest  # noqa: E402
+from flask import request  # noqa: E402
+
+from pubsub_ws import Broker, app, handle_disconnect, handle_subscribe, init_db, socketio  # noqa: E402
 
 
 # Fixtures (inchangées)
@@ -32,41 +33,36 @@ def test_broker(db_conn):
 @pytest.fixture
 def socketio_test_client(test_broker, db_conn):
     """Crée un client de test Socket.IO pour l'application Flask."""
-    # Note: Ce client est principalement utile pour les tests d'intégration complets,
+    # Note: Ce client est principalement utile pour les tests d'intégration completes,
     # pas pour tester directement les gestionnaires qui manipulent `request.sid`.
     # Nous le gardons pour sa capacité à envoyer des événements et à recevoir des réponses.
-    with patch('pubsub_ws.broker', new=test_broker):
-        with patch('pubsub_ws.init_db'):
-            client = socketio.test_client(app)
-            yield client
-            client.disconnect()
+    with patch("pubsub_ws.broker", new=test_broker), patch("pubsub_ws.init_db"):
+        client = socketio.test_client(app)
+        yield client
+        client.disconnect()
 
 
 @pytest.fixture
 def flask_test_client(test_broker, db_conn):
     """Crée un client de test Flask pour l'application."""
-    with patch('pubsub_ws.broker', new=test_broker):
-        with app.test_client() as client:
-            yield client
+    with patch("pubsub_ws.broker", new=test_broker), app.test_client() as client:
+        yield client
 
 
-# --- Tests pour la classe Broker (inchangés car ils passent) ---
+# --- Tests pour la class Broker (inchangés car ils passent) ---
+
 
 def test_broker_register_subscription(test_broker, mocker):
     sid = "test_sid_1"
     consumer = "test_consumer_1"
     topic = "test_topic_1"
-    with patch.object(socketio, 'emit') as mock_emit:
+    with patch.object(socketio, "emit") as mock_emit:
         test_broker.register_subscription(sid, consumer, topic)
         clients = test_broker.get_clients()
         assert len(clients) == 1
         assert clients[0]["consumer"] == consumer
         assert clients[0]["topic"] == topic
-        mock_emit.assert_called_with("new_client", {
-            "consumer": consumer,
-            "topic": topic,
-            "connected_at": mocker.ANY
-        })
+        mock_emit.assert_called_with("new_client", {"consumer": consumer, "topic": topic, "connected_at": mocker.ANY})
 
 
 def test_broker_unregister_client(test_broker):
@@ -74,7 +70,7 @@ def test_broker_unregister_client(test_broker):
     consumer = "test_consumer_2"
     topic = "test_topic_2"
     test_broker.register_subscription(sid, consumer, topic)
-    with patch.object(socketio, 'emit') as mock_emit:
+    with patch.object(socketio, "emit") as mock_emit:
         test_broker.unregister_client(sid)
         clients = test_broker.get_clients()
         assert len(clients) == 0
@@ -86,17 +82,23 @@ def test_broker_save_message(test_broker, mocker):
     message_id = "msg_123"
     message = {"text": "Football score"}
     producer = "news_bot"
-    with patch.object(socketio, 'emit') as mock_emit:
+    with patch.object(socketio, "emit") as mock_emit:
         test_broker.save_message(topic, message_id, message, producer)
         messages = test_broker.get_messages()
         assert len(messages) == 1
         assert messages[0]["message_id"] == message_id
         assert messages[0]["message"] == message
         assert messages[0]["producer"] == producer
-        mock_emit.assert_called_with("new_message", {
-            "topic": topic, "message_id": message_id, "message": message,
-            "producer": producer, "timestamp": mocker.ANY
-        })
+        mock_emit.assert_called_with(
+            "new_message",
+            {
+                "topic": topic,
+                "message_id": message_id,
+                "message": message,
+                "producer": producer,
+                "timestamp": mocker.ANY,
+            },
+        )
 
 
 def test_broker_save_consumption(test_broker, mocker):
@@ -104,17 +106,23 @@ def test_broker_save_consumption(test_broker, mocker):
     topic = "finance"
     message_id = "msg_456"
     message = {"stock": "AAPL", "price": 170}
-    with patch.object(socketio, 'emit') as mock_emit:
+    with patch.object(socketio, "emit") as mock_emit:
         test_broker.save_consumption(consumer, topic, message_id, message)
         consumptions = test_broker.get_consumptions()
         assert len(consumptions) == 1
         assert consumptions[0]["consumer"] == consumer
         assert consumptions[0]["message_id"] == message_id
         assert consumptions[0]["message"] == message
-        mock_emit.assert_called_with("new_consumption", {
-            "consumer": consumer, "topic": topic, "message_id": message_id,
-            "message": message, "timestamp": mocker.ANY
-        })
+        mock_emit.assert_called_with(
+            "new_consumption",
+            {
+                "consumer": consumer,
+                "topic": topic,
+                "message_id": message_id,
+                "message": message,
+                "timestamp": mocker.ANY,
+            },
+        )
 
 
 def test_broker_get_clients_and_messages_empty(test_broker):
@@ -125,19 +133,14 @@ def test_broker_get_clients_and_messages_empty(test_broker):
 
 # --- Tests pour les endpoints HTTP (Flask) (inchangés car ils passent) ---
 
+
 def test_publish_endpoint(flask_test_client, test_broker):
     topic = "test_topic"
     message_id = "test_msg_id"
     message_content = {"data": "hello"}
     producer = "test_producer"
-    payload = {
-        "topic": topic,
-        "message_id": message_id,
-        "message": message_content,
-        "producer": producer
-    }
-    with patch.object(test_broker, 'save_message') as mock_save, \
-            patch('pubsub_ws.socketio.emit') as mock_emit:
+    payload = {"topic": topic, "message_id": message_id, "message": message_content, "producer": producer}
+    with patch.object(test_broker, "save_message") as mock_save, patch("pubsub_ws.socketio.emit") as mock_emit:
         response = flask_test_client.post("/publish", json=payload)
         assert response.status_code == 200
         assert response.json == {"status": "ok"}
@@ -148,9 +151,7 @@ def test_publish_endpoint(flask_test_client, test_broker):
 
 
 def test_publish_endpoint_missing_data(flask_test_client):
-    response = flask_test_client.post("/publish", json={
-        "topic": "sport", "message": "missing_id", "producer": "me"
-    })
+    response = flask_test_client.post("/publish", json={"topic": "sport", "message": "missing_id", "producer": "me"})
     assert response.status_code == 400
     assert "Missing topic, message_id, message, or producer" in response.json["message"]
 
@@ -181,6 +182,7 @@ def test_consumptions_endpoint(flask_test_client, test_broker):
 
 # --- Tests pour les événements Socket.IO ---
 
+
 def test_socketio_subscribe(socketio_test_client, test_broker, mocker):
     consumer_name = "test_consumer"
     topics = ["topic_a", "topic_b"]
@@ -189,13 +191,13 @@ def test_socketio_subscribe(socketio_test_client, test_broker, mocker):
     test_sid = "test_socket_sid_123_sub"  # Utilisez un SID unique pour ce test
 
     # Utilisez le contexte de l'application Flask pour simuler `request`
-    with app.test_request_context('/'):
+    with app.test_request_context("/"):
         # Forcez request.sid à notre SID de test
         request.sid = test_sid  # <-- NOUVEAU : Affectation directe à request.sid
 
-        with patch('pubsub_ws.join_room') as mock_join_room, \
-                patch.object(test_broker, 'register_subscription') as mock_register_subscription, \
-                patch('pubsub_ws.emit') as mock_emit:
+        with patch("pubsub_ws.join_room") as mock_join_room, patch.object(
+            test_broker, "register_subscription"
+        ) as mock_register_subscription, patch("pubsub_ws.emit") as mock_emit:
             # Appelez directement le gestionnaire d'événements.
             # `handle_subscribe` attend `data` comme argument.
             handle_subscribe({"consumer": consumer_name, "topics": topics})  # <-- NOUVEAU : Appel direct
@@ -204,31 +206,39 @@ def test_socketio_subscribe(socketio_test_client, test_broker, mocker):
             mock_join_room.assert_any_call("topic_b")
             assert mock_join_room.call_count == 2
 
-            mock_register_subscription.assert_has_calls([
-                mocker.call(test_sid, consumer_name, "topic_a"),
-                mocker.call(test_sid, consumer_name, "topic_b")
-            ], any_order=True)
+            mock_register_subscription.assert_has_calls(
+                [mocker.call(test_sid, consumer_name, "topic_a"), mocker.call(test_sid, consumer_name, "topic_b")],
+                any_order=True,
+            )
             assert mock_register_subscription.call_count == 2
 
-            mock_emit.assert_any_call("message", {
-                "topic": "topic_a",
-                "message_id": mocker.ANY,
-                "message": "Subscribed to topic_a",
-                "producer": "server"
-            }, to=test_sid)
-            mock_emit.assert_any_call("message", {
-                "topic": "topic_b",
-                "message_id": mocker.ANY,
-                "message": "Subscribed to topic_b",
-                "producer": "server"
-            }, to=test_sid)
+            mock_emit.assert_any_call(
+                "message",
+                {
+                    "topic": "topic_a",
+                    "message_id": mocker.ANY,
+                    "message": "Subscribed to topic_a",
+                    "producer": "server",
+                },
+                to=test_sid,
+            )
+            mock_emit.assert_any_call(
+                "message",
+                {
+                    "topic": "topic_b",
+                    "message_id": mocker.ANY,
+                    "message": "Subscribed to topic_b",
+                    "producer": "server",
+                },
+                to=test_sid,
+            )
             assert mock_emit.call_count == 2
 
             # Note: `socketio_test_client.get_received()` ne fonctionnera pas ici
             # car nous n'avons pas émis *via* le client de test, mais directement
             # au gestionnaire. Ce n'est pas une limitation du test mais un changement de focus.
             # Si vous voulez tester ce que le client *recevrait*, vous devriez
-            # utiliser le socketio_test_client et les patchs de `request.sid` pour sa session.
+            # utiliser le socketio_test_client et les patches de `request.sid` pour sa session.
             # Pour l'instant, nous testons le comportement du serveur.
             # assert len(received) >= 2 # RETIRÉ
 
@@ -238,9 +248,9 @@ def test_socketio_consumed(socketio_test_client, test_broker):
         "consumer": "test_consumer_c",
         "topic": "test_topic_c",
         "message_id": "msg_id_c",
-        "message": {"content": "consumed_message"}
+        "message": {"content": "consumed_message"},
     }
-    with patch.object(test_broker, 'save_consumption') as mock_save_consumption:
+    with patch.object(test_broker, "save_consumption") as mock_save_consumption:
         socketio_test_client.emit("consumed", data)
         mock_save_consumption.assert_called_once_with(
             data["consumer"], data["topic"], data["message_id"], data["message"]
@@ -256,11 +266,11 @@ def test_socketio_disconnect(socketio_test_client, test_broker, mocker):
     test_broker.register_subscription(test_sid, "dis_consumer", "dis_topic")
 
     # Utilisez le contexte de l'application Flask pour simuler `request`
-    with app.test_request_context('/'):
+    with app.test_request_context("/"):
         # Forcez request.sid à notre SID de test
         request.sid = test_sid  # <-- NOUVEAU : Affectation directe à request.sid
 
-        with patch.object(test_broker, 'unregister_client') as mock_unregister_client:
+        with patch.object(test_broker, "unregister_client") as mock_unregister_client:
             # Appelez directement le gestionnaire d'événements.
             # `handle_disconnect` ne prend pas d'arguments explicites.
             handle_disconnect()  # <-- NOUVEAU : Appel direct
