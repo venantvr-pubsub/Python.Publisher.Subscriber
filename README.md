@@ -210,9 +210,6 @@ docker run -p 5000:5000 python.publisher.subscriber:latest
 ```bash
 # Run directly
 python src/pubsub_ws.py
-
-# Or using Make
-make run-server
 ```
 
 The
@@ -331,19 +328,16 @@ pytest-watch tests/ -v
 
 ```bash
 # Install development dependencies
-make install-dev
+make install
 
 # Setup pre-commit hooks
 pre-commit install
-
-# Run linting
-make lint
 
 # Format code
 make format
 
 # Run all checks
-make pre-commit
+make check
 ```
 
 ### Available Make Commands
@@ -351,12 +345,11 @@ make pre-commit
 ```bash
 make help         # Show all available commands
 make test         # Run tests
-make lint         # Run linting checks
 make format       # Format code
+make check        # Run format and tests
 make clean        # Clean generated files
-make build        # Build distribution packages
-make docker-build # Build Docker image
-make docker-run   # Run Docker container
+make install      # Install dependencies
+make update       # Update dependencies
 ```
 
 ## 📊 Database Schema
