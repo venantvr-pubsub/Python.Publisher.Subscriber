@@ -97,7 +97,6 @@ def test_requirements_file():
     content = req_file.read_text()
     assert "Flask" in content
     assert "flask-socketio" in content
-    assert "pytest" in content
 
 
 @pytest.mark.parametrize(

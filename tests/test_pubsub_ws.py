@@ -10,7 +10,14 @@ from unittest.mock import patch  # noqa: E402
 import pytest  # noqa: E402
 from flask import request  # noqa: E402
 
-from pubsub_ws import Broker, app, handle_disconnect, handle_subscribe, init_db, socketio  # noqa: E402
+from pubsub_ws import (  # noqa: E402
+    Broker,
+    app,
+    handle_disconnect,
+    handle_subscribe,
+    init_db,
+    socketio,
+)
 
 
 # Fixtures (unchanged)
@@ -62,7 +69,9 @@ def test_broker_register_subscription(test_broker, mocker):
         assert len(clients) == 1
         assert clients[0]["consumer"] == consumer
         assert clients[0]["topic"] == topic
-        mock_emit.assert_called_with("new_client", {"consumer": consumer, "topic": topic, "connected_at": mocker.ANY})
+        mock_emit.assert_called_with(
+            "new_client", {"consumer": consumer, "topic": topic, "connected_at": mocker.ANY}
+        )
 
 
 def test_broker_unregister_client(test_broker):
@@ -139,8 +148,15 @@ def test_publish_endpoint(flask_test_client, test_broker):
     message_id = "test_msg_id"
     message_content = {"data": "hello"}
     producer = "test_producer"
-    payload = {"topic": topic, "message_id": message_id, "message": message_content, "producer": producer}
-    with patch.object(test_broker, "save_message") as mock_save, patch("pubsub_ws.socketio.emit") as mock_emit:
+    payload = {
+        "topic": topic,
+        "message_id": message_id,
+        "message": message_content,
+        "producer": producer,
+    }
+    with patch.object(test_broker, "save_message") as mock_save, patch(
+        "pubsub_ws.socketio.emit"
+    ) as mock_emit:
         response = flask_test_client.post("/publish", json=payload)
         assert response.status_code == 200
         assert response.json == {"status": "ok"}
@@ -151,7 +167,9 @@ def test_publish_endpoint(flask_test_client, test_broker):
 
 
 def test_publish_endpoint_missing_data(flask_test_client):
-    response = flask_test_client.post("/publish", json={"topic": "sport", "message": "missing_id", "producer": "me"})
+    response = flask_test_client.post(
+        "/publish", json={"topic": "sport", "message": "missing_id", "producer": "me"}
+    )
     assert response.status_code == 400
     assert "Missing topic, message_id, message, or producer" in response.json["message"]
 
@@ -200,14 +218,19 @@ def test_socketio_subscribe(socketio_test_client, test_broker, mocker):
         ) as mock_register_subscription, patch("pubsub_ws.emit") as mock_emit:
             # Call the event handler directly.
             # `handle_subscribe` attend `data` comme argument.
-            handle_subscribe({"consumer": consumer_name, "topics": topics})  # <-- NOUVEAU : Appel direct
+            handle_subscribe(
+                {"consumer": consumer_name, "topics": topics}
+            )  # <-- NOUVEAU : Appel direct
 
             mock_join_room.assert_any_call("topic_a")
             mock_join_room.assert_any_call("topic_b")
             assert mock_join_room.call_count == 2
 
             mock_register_subscription.assert_has_calls(
-                [mocker.call(test_sid, consumer_name, "topic_a"), mocker.call(test_sid, consumer_name, "topic_b")],
+                [
+                    mocker.call(test_sid, consumer_name, "topic_a"),
+                    mocker.call(test_sid, consumer_name, "topic_b"),
+                ],
                 any_order=True,
             )
             assert mock_register_subscription.call_count == 2
@@ -253,7 +276,7 @@ def test_socketio_consumed(socketio_test_client, test_broker):
     with patch.object(test_broker, "save_consumption") as mock_save_consumption:
         socketio_test_client.emit("consumed", data)
         mock_save_consumption.assert_called_once_with(
-            data["consumer"], data["topic"], data["message_id"], data["message"]
+            data["consumer"], data["topic"], data["message_id"], str(data["message"])
         )
 
 

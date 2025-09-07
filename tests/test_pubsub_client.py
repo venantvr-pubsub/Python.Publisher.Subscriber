@@ -19,7 +19,9 @@ from client import BASE_URL, PubSubClient  # noqa: E402
 @pytest.fixture
 def mock_sio_client():
     """Mocks the socketio.Client instance used by PubSubClient."""
-    with patch("client.socketio.Client") as MockClient:  # <-- Patch la class directement dans le module client
+    with patch(
+        "client.socketio.Client"
+    ) as MockClient:  # <-- Patch la class directement dans le module client
         instance = MockClient.return_value  # This is the mock of the instance that will be created
         instance.connected = False  # Simulate initial disconnected state
         yield MockClient  # We yield the Mock of the Client CLASS itself, not its instance
@@ -30,7 +32,9 @@ def mock_sio_client():
 def mock_requests_post():
     """Mocke requests.post pour les appels de publication HTTP."""
     # Patch requests.post in the client module where it is used
-    with patch("client.requests.post") as mock_post:  # <-- Patch requests.post dans le module client
+    with patch(
+        "client.requests.post"
+    ) as mock_post:  # <-- Patch requests.post dans le module client
         mock_response = MagicMock()
         mock_response.json.return_value = {"status": "ok", "message_id": "test_id_returned"}
         mock_response.raise_for_status.return_value = None  # No HTTP errors by default
@@ -56,7 +60,9 @@ def test_pubsub_client_init(mock_sio_client):
     # Verify that event handlers are registered on the mocked instance
     mock_sio_client.return_value.on.assert_any_call("message", client.on_message)
     mock_sio_client.return_value.on.assert_any_call("new_client", client.on_new_client)
-    mock_sio_client.return_value.on.assert_any_call("client_disconnected", client.on_client_disconnected)
+    mock_sio_client.return_value.on.assert_any_call(
+        "client_disconnected", client.on_client_disconnected
+    )
     mock_sio_client.return_value.on.assert_any_call("new_consumption", client.on_new_consumption)
     mock_sio_client.return_value.on.assert_any_call("new_message", client.on_new_message)
 
@@ -77,7 +83,9 @@ def test_pubsub_client_connect_success(mock_sio_client):
     mock_instance.connect.assert_called_once_with(BASE_URL)
 
     # Verify that the "subscribe" event was emitted on the mocked instance
-    mock_instance.emit.assert_called_once_with("subscribe", {"consumer": consumer, "topics": topics})
+    mock_instance.emit.assert_called_once_with(
+        "subscribe", {"consumer": consumer, "topics": topics}
+    )
 
 
 def test_pubsub_client_connect_failure(mock_sio_client, caplog):
@@ -132,7 +140,7 @@ def test_pubsub_client_publish(mock_requests_post):
         "producer": consumer,
         "message_id": message_id,
     }
-    mock_requests_post.assert_called_once_with(expected_url, json=expected_json)
+    mock_requests_post.assert_called_once_with(expected_url, json=expected_json, timeout=10)
 
     # Verify the response returned by the publish method
     assert response == {"status": "ok", "message_id": "test_id_returned"}

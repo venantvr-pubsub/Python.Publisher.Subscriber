@@ -66,7 +66,9 @@ class TestBroker:
         cursor = in_memory_db.cursor()
 
         # Store a message
-        cursor.execute("INSERT INTO messages (topic, message) VALUES (?, ?)", ("test_topic", "test_message"))
+        cursor.execute(
+            "INSERT INTO messages (topic, message) VALUES (?, ?)", ("test_topic", "test_message")
+        )
         in_memory_db.commit()
 
         # Retrieve the message
@@ -82,8 +84,13 @@ class TestBroker:
         cursor = in_memory_db.cursor()
 
         # Add subscription
-        cursor.execute("INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "sports"))
-        cursor.execute("INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "news"))
+        cursor.execute(
+            "INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)",
+            ("alice", "sports"),
+        )
+        cursor.execute(
+            "INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "news")
+        )
         in_memory_db.commit()
 
         # Check subscriptions
@@ -104,11 +111,16 @@ class TestBroker:
         in_memory_db.commit()
 
         # Record consumption
-        cursor.execute("INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)", ("bob", message_id))
+        cursor.execute(
+            "INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)",
+            ("bob", message_id),
+        )
         in_memory_db.commit()
 
         # Verify consumption
-        cursor.execute("SELECT * FROM consumptions WHERE consumer = ? AND message_id = ?", ("bob", message_id))
+        cursor.execute(
+            "SELECT * FROM consumptions WHERE consumer = ? AND message_id = ?", ("bob", message_id)
+        )
         result = cursor.fetchone()
 
         assert result is not None
@@ -120,7 +132,9 @@ class TestBroker:
         cursor = in_memory_db.cursor()
 
         # Store a message
-        cursor.execute("INSERT INTO messages (topic, message) VALUES (?, ?)", ("shared", "shared_message"))
+        cursor.execute(
+            "INSERT INTO messages (topic, message) VALUES (?, ?)", ("shared", "shared_message")
+        )
         message_id = cursor.lastrowid
         in_memory_db.commit()
 
@@ -128,12 +142,15 @@ class TestBroker:
         consumers = ["alice", "bob", "charlie"]
         for consumer in consumers:
             cursor.execute(
-                "INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)", (consumer, message_id)
+                "INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)",
+                (consumer, message_id),
             )
         in_memory_db.commit()
 
         # Verify all consumptions
-        cursor.execute("SELECT COUNT(DISTINCT consumer) FROM consumptions WHERE message_id = ?", (message_id,))
+        cursor.execute(
+            "SELECT COUNT(DISTINCT consumer) FROM consumptions WHERE message_id = ?", (message_id,)
+        )
         count = cursor.fetchone()[0]
         assert count == 3
 
@@ -171,7 +188,10 @@ class TestPubSubMessage:
             from pubsub.pubsub_message import PubSubMessage
 
             msg = PubSubMessage(
-                topic="test_topic", message_id="12345", message="test_content", producer="test_producer"
+                topic="test_topic",
+                message_id="12345",
+                message="test_content",
+                producer="test_producer",
             )
 
             assert msg.topic == "test_topic"
@@ -184,7 +204,12 @@ class TestPubSubMessage:
         with patch.dict("sys.modules", {"pubsub_ws": MagicMock()}):
             from pubsub.pubsub_message import PubSubMessage
 
-            msg = PubSubMessage(topic="sports", message_id="msg123", message="Goal scored!", producer="sports_reporter")
+            msg = PubSubMessage(
+                topic="sports",
+                message_id="msg123",
+                message="Goal scored!",
+                producer="sports_reporter",
+            )
 
             msg_dict = msg.to_dict()
 
@@ -207,7 +232,9 @@ class TestPubSubClient:
         with patch("socketio.Client"):
             from pubsub.pubsub_client import PubSubClient
 
-            client = PubSubClient(url="http://localhost:5000", consumer="test_consumer", topics=["test_topic"])
+            client = PubSubClient(
+                url="http://localhost:5000", consumer="test_consumer", topics=["test_topic"]
+            )
 
             assert client.url == "http://localhost:5000"
             assert client.consumer == "test_consumer"
@@ -219,7 +246,9 @@ class TestPubSubClient:
             from pubsub.pubsub_client import PubSubClient
 
             topics = ["sports", "news", "tech"]
-            client = PubSubClient(url="http://localhost:5000", consumer="test_consumer", topics=topics)
+            client = PubSubClient(
+                url="http://localhost:5000", consumer="test_consumer", topics=topics
+            )
 
             # Check initial topics
             assert len(client.topics) == 3
@@ -277,7 +306,9 @@ class TestDatabaseOperations:
         cursor.execute("INSERT INTO messages (topic, message) VALUES ('test', 'msg')")
         cursor.execute("INSERT INTO subscriptions (consumer, topic) VALUES ('alice', 'test')")
         message_id = 1
-        cursor.execute("INSERT INTO consumptions (consumer, message_id) VALUES ('alice', ?)", (message_id,))
+        cursor.execute(
+            "INSERT INTO consumptions (consumer, message_id) VALUES ('alice', ?)", (message_id,)
+        )
 
         conn.commit()
 
@@ -329,7 +360,9 @@ class TestDatabaseOperations:
         conn.commit()
 
         # Valid foreign key reference should work
-        cursor.execute("INSERT INTO consumptions (consumer, message_id) VALUES ('alice', ?)", (message_id,))
+        cursor.execute(
+            "INSERT INTO consumptions (consumer, message_id) VALUES ('alice', ?)", (message_id,)
+        )
         conn.commit()
 
         # Invalid foreign key reference should fail

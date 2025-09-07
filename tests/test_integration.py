@@ -17,7 +17,12 @@ class TestIntegration:
 
     def test_json_message_structure(self):
         """Test JSON message structure for pub/sub."""
-        message = {"topic": "test", "message_id": "123", "message": "Hello World", "producer": "test_producer"}
+        message = {
+            "topic": "test",
+            "message_id": "123",
+            "message": "Hello World",
+            "producer": "test_producer",
+        }
 
         # Test serialization
         json_str = json.dumps(message)
@@ -56,10 +61,13 @@ class TestIntegration:
 
         # Test message flow
         cursor.execute(
-            "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)", ("sports", "Game started", "sports_bot")
+            "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)",
+            ("sports", "Game started", "sports_bot"),
         )
 
-        cursor.execute("INSERT INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "sports"))
+        cursor.execute(
+            "INSERT INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "sports")
+        )
 
         # Verify integration
         cursor.execute(
@@ -117,7 +125,8 @@ class TestIntegration:
                     # noinspection PyShadowingNames
                     for i in range(3):
                         thread_cursor.execute(
-                            "INSERT INTO test_messages (content, thread_id) VALUES (?, ?)", (f"Message {i}", thread_id)
+                            "INSERT INTO test_messages (content, thread_id) VALUES (?, ?)",
+                            (f"Message {i}", thread_id),
                         )
                     thread_conn.commit()
                     thread_conn.close()
@@ -235,7 +244,11 @@ class TestIntegration:
     def test_subscription_matching(self):
         """Test subscription topic matching logic."""
         # Simulate subscription patterns
-        subscriptions = {"alice": ["sports", "news"], "bob": ["tech", "finance"], "charlie": ["sports", "tech", "news"]}
+        subscriptions = {
+            "alice": ["sports", "news"],
+            "bob": ["tech", "finance"],
+            "charlie": ["sports", "tech", "news"],
+        }
 
         # Test message routing
         message_topic = "sports"

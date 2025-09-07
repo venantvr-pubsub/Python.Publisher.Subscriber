@@ -45,7 +45,7 @@ def init_db(db_name: str, connection: Optional[sqlite3.Connection] = None) -> No
 
 # Default DB file name
 DB_FILE_NAME = "pubsub.db"
-# --- FIN MODIFICATION POUR LA GESTION DE LA DB ET LES TESTS ---
+# --- END MODIFICATION FOR DB MANAGEMENT AND TESTS ---
 
 
 app = Flask(__name__)
@@ -97,7 +97,7 @@ class Broker:
 
             socketio.emit(
                 "new_client",
-                {"consumer": consumer, "topic": topic, "connected_at": time.time()},  # Ajoutez le timestamp pour l'UI
+                {"consumer": consumer, "topic": topic, "connected_at": time.time()},  # Add timestamp for the UI
             )
         except sqlite3.Error as e:
             logger.error(f"Database error during subscription registration: {e}")

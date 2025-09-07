@@ -1,72 +1,44 @@
-.PHONY: help install install-dev test test-cov lint format clean run-server run-client build docker-build docker-run pre-commit docs docs-serve
+.PHONY: help test clean format check install
 
-help: ## Show this help message
-	@echo "Usage: make [target]"
-	@echo ""
+PYTHON := $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
+PIP := $(if $(wildcard .venv/bin/pip),.venv/bin/pip,pip3)
+SOURCES := tests
+
+# Default target
+help:
 	@echo "Available targets:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo "  test      Run tests"
+	@echo "  format    Format code with black and isort"
+	@echo "  check     Run format and tests"
+	@echo "  clean     Clean up generated files"
+	@echo "  install   Install dependencies"
+	@echo "  update    Update dependencies"
 
-install: ## Install production dependencies
-	pip install -r requirements.txt
+# Testing
+test:
+	$(PYTHON) -m pytest tests/ -v --tb=short
 
-install-dev: ## Install development dependencies
-	pip install -r requirements-dev.txt
-	pip install -e .
-	pre-commit install
+# Code formatting
+format:
+	$(PYTHON) -m black $(SOURCES) tests/
+	$(PYTHON) -m isort $(SOURCES) tests/
 
-test: ## Run tests
-	pytest tests/ -v
+# Combined check
+check: format test
 
-test-cov: ## Run tests with coverage
-	pytest tests/ --cov=src --cov-report=term-missing --cov-report=html:coverage/htmlcov --cov-report=xml:coverage/coverage.xml
+# Installation
+install:
+	$(PIP) install -r requirements.txt
+	$(PIP) install -r requirements-dev.txt
 
-test-watch: ## Run tests in watch mode
-	pytest-watch tests/ -v
+# Updates
+update:
+	$(PIP) install --upgrade pip
+	$(PIP) install --upgrade -r requirements.txt
+	$(PIP) install --upgrade -r requirements-dev.txt
 
-lint: ## Run linting checks
-	@echo "Running flake8..."
-	flake8 src/ tests/
-	@echo "Running mypy..."
-	mypy src/
-	@echo "Running ruff..."
-	ruff check src/ tests/
-
-format: ## Format code with black and isort
-	black src/ tests/
-	isort src/ tests/
-	ruff check --fix src/ tests/
-
-clean: ## Clean up generated files
+# Clean up
+clean:
+	rm -rf build/ dist/ *.egg-info .pytest_cache/ .mypy_cache/
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete
-	find . -type d -name "__pycache__" -delete
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-	rm -rf coverage/
-	rm -rf htmlcov/
-	rm -f coverage.xml coverage.json .coverage
-	rm -rf dist/ build/ *.egg-info src/*.egg-info
-
-run-server: ## Run the WebSocket server
-	python src/pubsub_ws.py
-
-run-client: ## Run the client
-	python src/client.py
-
-build: ## Build the package
-	python -m build
-
-docker-build: ## Build Docker image
-	docker build -t python.publisher.subscriber:latest .
-
-docker-run: ## Run Docker container
-	docker run -p 5000:5000 python.publisher.subscriber:latest
-
-pre-commit: ## Run pre-commit hooks
-	pre-commit run --all-files
-
-docs: ## Generate documentation
-	cd docs && make html
-
-docs-serve: ## Serve documentation locally
-	cd docs && python -m http.server --directory _build/html 8000

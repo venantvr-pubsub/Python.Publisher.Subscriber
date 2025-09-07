@@ -68,7 +68,9 @@ class TestMessageHandling:
         in_memory_db.commit()
 
         # Retrieve the message
-        cursor.execute("SELECT topic, message, producer FROM messages WHERE topic = ?", ("test_topic",))
+        cursor.execute(
+            "SELECT topic, message, producer FROM messages WHERE topic = ?", ("test_topic",)
+        )
         result = cursor.fetchone()
 
         assert result is not None
@@ -81,8 +83,13 @@ class TestMessageHandling:
         cursor = in_memory_db.cursor()
 
         # Add subscription
-        cursor.execute("INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "sports"))
-        cursor.execute("INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "news"))
+        cursor.execute(
+            "INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)",
+            ("alice", "sports"),
+        )
+        cursor.execute(
+            "INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", ("alice", "news")
+        )
         in_memory_db.commit()
 
         # Check subscriptions
@@ -99,17 +106,23 @@ class TestMessageHandling:
 
         # Store a message
         cursor.execute(
-            "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)", ("test", "message1", "producer1")
+            "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)",
+            ("test", "message1", "producer1"),
         )
         message_id = cursor.lastrowid
         in_memory_db.commit()
 
         # Record consumption
-        cursor.execute("INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)", ("bob", message_id))
+        cursor.execute(
+            "INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)",
+            ("bob", message_id),
+        )
         in_memory_db.commit()
 
         # Verify consumption
-        cursor.execute("SELECT * FROM consumptions WHERE consumer = ? AND message_id = ?", ("bob", message_id))
+        cursor.execute(
+            "SELECT * FROM consumptions WHERE consumer = ? AND message_id = ?", ("bob", message_id)
+        )
         result = cursor.fetchone()
 
         assert result is not None
@@ -130,14 +143,17 @@ class TestMessageHandling:
         message_ids = []
         for topic, message, producer in messages:
             cursor.execute(
-                "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)", (topic, message, producer)
+                "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)",
+                (topic, message, producer),
             )
             message_ids.append(cursor.lastrowid)
 
         in_memory_db.commit()
 
         # Retrieve messages
-        cursor.execute("SELECT id, message FROM messages WHERE topic = ? ORDER BY id", ("order_test",))
+        cursor.execute(
+            "SELECT id, message FROM messages WHERE topic = ? ORDER BY id", ("order_test",)
+        )
         results = cursor.fetchall()
 
         assert len(results) == 3
@@ -164,12 +180,15 @@ class TestMessageHandling:
         consumers = ["alice", "bob", "charlie"]
         for consumer in consumers:
             cursor.execute(
-                "INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)", (consumer, message_id)
+                "INSERT OR IGNORE INTO consumptions (consumer, message_id) VALUES (?, ?)",
+                (consumer, message_id),
             )
         in_memory_db.commit()
 
         # Check all consumptions were recorded
-        cursor.execute("SELECT COUNT(DISTINCT consumer) FROM consumptions WHERE message_id = ?", (message_id,))
+        cursor.execute(
+            "SELECT COUNT(DISTINCT consumer) FROM consumptions WHERE message_id = ?", (message_id,)
+        )
         count = cursor.fetchone()[0]
         assert count == 3
 
@@ -188,7 +207,8 @@ class TestMessageHandling:
 
         for topic, message, producer in topics_messages:
             cursor.execute(
-                "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)", (topic, message, producer)
+                "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)",
+                (topic, message, producer),
             )
         in_memory_db.commit()
 
@@ -216,7 +236,10 @@ class TestMessageHandling:
         ]
 
         for consumer, topic in subscriptions:
-            cursor.execute("INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)", (consumer, topic))
+            cursor.execute(
+                "INSERT OR IGNORE INTO subscriptions (consumer, topic) VALUES (?, ?)",
+                (consumer, topic),
+            )
         in_memory_db.commit()
 
         # Test subscription queries
@@ -249,7 +272,8 @@ class TestMessageHandling:
         cursor = in_memory_db.cursor()
 
         cursor.execute(
-            "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)", (topic, message, f"{topic}_producer")
+            "INSERT INTO messages (topic, message, producer) VALUES (?, ?, ?)",
+            (topic, message, f"{topic}_producer"),
         )
         in_memory_db.commit()
 
