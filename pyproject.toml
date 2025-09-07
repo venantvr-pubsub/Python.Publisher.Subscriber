@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "A real-time Publisher-Subscriber system using WebSockets"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "venantvr", email = "venantvr@gmail.com" }
 ]
@@ -19,7 +19,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -65,6 +64,14 @@ Homepage = "https://github.com/venantvr/Python.Publisher.Subscriber"
 Documentation = "https://python-publisher-subscriber.readthedocs.io"
 Repository = "https://github.com/venantvr/Python.Publisher.Subscriber.git"
 Issues = "https://github.com/venantvr/Python.Publisher.Subscriber/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project.scripts]
 pubsub-server = "pubsub_ws:main"

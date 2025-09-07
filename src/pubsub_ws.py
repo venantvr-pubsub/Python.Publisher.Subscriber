@@ -388,6 +388,11 @@ def handle_disconnect() -> None:  # <-- Signature without explicit argument for 
     broker.unregister_client(sid)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Entry point for the pubsub server."""
     logger.info("Starting Flask-SocketIO server on port 5000")
     socketio.run(app, host="0.0.0.0", port=5000)  # nosec B104
+
+
+if __name__ == "__main__":
+    main()

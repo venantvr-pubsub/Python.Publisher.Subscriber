@@ -94,3 +94,19 @@ class PubSubClient:
         if self.sio.connected:
             self.sio.disconnect()
             logger.info(f"Disconnected {self.consumer_name} from server.")
+
+
+def main() -> None:
+    """Entry point for the pubsub client demo."""
+    client = PubSubClient(consumer_name="demo-client", topics=["test"])
+    client.connect()
+    
+    try:
+        client.run_forever()
+    except KeyboardInterrupt:
+        client.disconnect()
+        logger.info("Client disconnected.")
+
+
+if __name__ == "__main__":
+    main()
