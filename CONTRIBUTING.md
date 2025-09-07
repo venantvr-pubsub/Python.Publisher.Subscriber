@@ -1,6 +1,6 @@
-# Contributing to PubSub WebSocket
+# Contributing to Python Publisher Subscriber
 
-First off, thank you for considering contributing to PubSub WebSocket! It's people like you that make PubSub WebSocket such a great tool.
+First off, thank you for considering contributing to Python Publisher Subscriber! It's people like you that make Python Publisher Subscriber such a great tool.
 
 ## Code of Conduct
 
@@ -27,14 +27,14 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 * **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
 * **Provide specific examples to demonstrate the steps**.
 * **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
-* **Explain why this enhancement would be useful** to most PubSub WebSocket users.
+* **Explain why this enhancement would be useful** to most Python Publisher Subscriber users.
 
 ### Your First Code Contribution
 
 Unsure where to begin contributing? You can start by looking through these `beginner` and `help-wanted` issues:
 
-* [Beginner issues](https://github.com/yourusername/pubsub-websocket/labels/beginner) - issues which should only require a few lines of code.
-* [Help wanted issues](https://github.com/yourusername/pubsub-websocket/labels/help%20wanted) - issues which should be a bit more involved than `beginner` issues.
+* Beginner issues - issues which should only require a few lines of code.
+* Help wanted issues - issues which should be a bit more involved than `beginner` issues.
 
 ### Pull Requests
 
@@ -49,11 +49,12 @@ Unsure where to begin contributing? You can start by looking through these `begi
 
 1. **Setup your environment:**
    ```bash
-   git clone https://github.com/yourusername/pubsub-websocket.git
-   cd pubsub-websocket
+   git clone https://github.com/venantvr/Python.Publisher.Subscriber.git
+   cd Python.Publisher.Subscriber
    python -m venv venv
    source venv/bin/activate
-   pip install -e ".[dev]"
+   pip install -r requirements-dev.txt
+   pip install -e .
    pre-commit install
    ```
 

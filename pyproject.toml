@@ -3,17 +3,17 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pubsub-websocket"
+name = "Python.Publisher.Subscriber"
 version = "1.0.0"
 description = "A real-time Publisher-Subscriber system using WebSockets"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "venantvr", email = "venantvr@gmail.com"}
 ]
 maintainers = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "venantvr", email = "venantvr@gmail.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -30,37 +30,42 @@ classifiers = [
     "Framework :: Flask",
 ]
 dependencies = [
-    "Flask>=3.0.0",
-    "flask-socketio>=5.3.6",
-    "eventlet>=0.33.0",
-    "python-socketio[client]>=5.0.0",
-    "requests>=2.31.0",
+    "Flask==3.0.0",
+    "flask-socketio==5.3.6",
+    "eventlet==0.40.3",
+    "python-socketio[client]==5.10.0",
+    "requests==2.32.4",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.11.1",
-    "pytest-asyncio>=0.21.1",
-    "black>=23.7.0",
-    "flake8>=6.1.0",
-    "mypy>=1.5.0",
-    "isort>=5.12.0",
-    "pre-commit>=3.3.3",
-    "ruff>=0.1.0",
+    "pytest==7.4.3",
+    "pytest-cov==4.1.0",
+    "pytest-mock==3.12.0",
+    "pytest-asyncio==0.21.1",
+    "pytest-watch==4.2.0",
+    "black==24.3.0",
+    "flake8==6.1.0",
+    "mypy==1.8.0",
+    "isort==5.13.2",
+    "ruff==0.1.9",
+    "bandit==1.7.5",
+    "pre-commit==3.6.0",
+    "build==1.0.3",
+    "wheel==0.42.0",
+    "setuptools>=61.0",
 ]
 docs = [
-    "sphinx>=7.1.0",
-    "sphinx-rtd-theme>=1.3.0",
-    "sphinx-autodoc-typehints>=1.24.0",
+    "sphinx==7.1.0",
+    "sphinx-rtd-theme==1.3.0",
+    "sphinx-autodoc-typehints==1.24.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/pubsub-websocket"
-Documentation = "https://pubsub-websocket.readthedocs.io"
-Repository = "https://github.com/yourusername/pubsub-websocket.git"
-Issues = "https://github.com/yourusername/pubsub-websocket/issues"
+Homepage = "https://github.com/venantvr/Python.Publisher.Subscriber"
+Documentation = "https://python-publisher-subscriber.readthedocs.io"
+Repository = "https://github.com/venantvr/Python.Publisher.Subscriber.git"
+Issues = "https://github.com/venantvr/Python.Publisher.Subscriber/issues"
 
 [project.scripts]
 pubsub-server = "pubsub_ws:main"

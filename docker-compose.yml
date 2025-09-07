@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: pubsub-websocket:latest
+    image: python.publisher.subscriber:latest
     container_name: pubsub-server
     ports:
       - "5000:5000"

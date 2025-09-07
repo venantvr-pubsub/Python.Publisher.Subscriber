@@ -1,4 +1,4 @@
-.PHONY: help install install-dev test test-cov lint format clean run-server run-client build docker-build docker-run
+.PHONY: help install install-dev test test-cov lint format clean run-server run-client build docker-build docker-run pre-commit docs docs-serve
 
 help: ## Show this help message
 	@echo "Usage: make [target]"
@@ -10,7 +10,8 @@ install: ## Install production dependencies
 	pip install -r requirements.txt
 
 install-dev: ## Install development dependencies
-	pip install -e ".[dev]"
+	pip install -r requirements-dev.txt
+	pip install -e .
 	pre-commit install
 
 test: ## Run tests
@@ -44,7 +45,7 @@ clean: ## Clean up generated files
 	rm -rf coverage/
 	rm -rf htmlcov/
 	rm -f coverage.xml coverage.json .coverage
-	rm -rf dist/ build/ *.egg-info
+	rm -rf dist/ build/ *.egg-info src/*.egg-info
 
 run-server: ## Run the WebSocket server
 	python src/pubsub_ws.py
@@ -56,10 +57,10 @@ build: ## Build the package
 	python -m build
 
 docker-build: ## Build Docker image
-	docker build -t pubsub-websocket:latest .
+	docker build -t python.publisher.subscriber:latest .
 
 docker-run: ## Run Docker container
-	docker run -p 5000:5000 pubsub-websocket:latest
+	docker run -p 5000:5000 python.publisher.subscriber:latest
 
 pre-commit: ## Run pre-commit hooks
 	pre-commit run --all-files

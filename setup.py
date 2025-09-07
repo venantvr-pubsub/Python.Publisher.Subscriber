@@ -8,14 +8,14 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
-    name="pubsub-websocket",
+    name="Python.Publisher.Subscriber",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="venantvr",
+    author_email="venantvr@gmail.com",
     description="A real-time Publisher-Subscriber system using WebSockets",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/pubsub-websocket",
+    url="https://github.com/venantvr/Python.Publisher.Subscriber",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[
@@ -32,11 +32,11 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
-        "Flask>=3.0.0",
-        "flask-socketio>=5.3.6",
-        "eventlet>=0.33.0",
-        "python-socketio[client]>=5.0.0",
-        "requests>=2.31.0",
+        "Flask==3.0.0",
+        "flask-socketio==5.3.6",
+        "eventlet==0.40.3",
+        "python-socketio[client]==5.10.0",
+        "requests==2.32.4",
     ],
     extras_require={
         "dev": [

@@ -1,4 +1,4 @@
-# PubSub WebSocket Server
+# Python Publisher Subscriber
 
 <div align="center">
 
@@ -6,17 +6,14 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-red)
 ![WebSocket](https://img.shields.io/badge/WebSocket-Enabled-brightgreen)
-[![codecov](https://codecov.io/gh/yourusername/pubsub-websocket/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/pubsub-websocket)
-[![Documentation Status](https://readthedocs.org/projects/pubsub-websocket/badge/?version=latest)](https://pubsub-websocket.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/pubsub-websocket.svg)](https://badge.fury.io/py/pubsub-websocket)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)
+![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)
+![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
 
 A high-performance, real-time Publisher-Subscriber system built with Flask, Flask-SocketIO, and SQLite.
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Contributing](#-contributing)
 
 </div>
 
@@ -44,25 +41,20 @@ A high-performance, real-time Publisher-Subscriber system built with Flask, Flas
 
 ## 🔧 Installation
 
-### From PyPI (Recommended)
-
-```bash
-pip install pubsub-websocket
-```
-
 ### From Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/pubsub-websocket.git
-cd pubsub-websocket
+git clone https://github.com/venantvr/Python.Publisher.Subscriber.git
+cd Python.Publisher.Subscriber
 
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install in development mode
-pip install -e ".[dev]"
+pip install -r requirements-dev.txt
+pip install -e .
 ```
 
 ### Using Docker
@@ -72,8 +64,8 @@ pip install -e ".[dev]"
 docker-compose up -d
 
 # Or build and run manually
-docker build -t pubsub-websocket:latest .
-docker run -p 5000:5000 pubsub-websocket:latest
+docker build -t python.publisher.subscriber:latest .
+docker run -p 5000:5000 python.publisher.subscriber:latest
 ```
 
 ## 🚀 Quick Start
@@ -81,10 +73,7 @@ docker run -p 5000:5000 pubsub-websocket:latest
 ### 1. Start the Server
 
 ```bash
-# Using the installed package
-pubsub-server
-
-# Or run directly
+# Run directly
 python src/pubsub_ws.py
 
 # Or using Make
@@ -148,7 +137,7 @@ Open your browser at `http://localhost:5000/client.html`
 ## 📁 Project Structure
 
 ```
-pubsub-websocket/
+Python.Publisher.Subscriber/
 ├── src/                      # Source code
 │   ├── pubsub/              # Core library modules
 │   │   ├── __init__.py
@@ -332,14 +321,14 @@ docker-compose down
 
 ```bash
 # Build image
-docker build -t pubsub-websocket:latest .
+docker build -t python.publisher.subscriber:latest .
 
 # Run container
 docker run -d \
   -p 5000:5000 \
   -v $(pwd)/pubsub.db:/app/pubsub.db \
   --name pubsub-server \
-  pubsub-websocket:latest
+  python.publisher.subscriber:latest
 ```
 
 ## 📈 Monitoring
@@ -387,7 +376,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
@@ -397,13 +386,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📚 Documentation
 
-Full documentation is available at [https://pubsub-websocket.readthedocs.io](https://pubsub-websocket.readthedocs.io)
+Full documentation is available in the `docs/` directory.
 
 ## 📧 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/pubsub-websocket/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/pubsub-websocket/discussions)
-- **Email**: your.email@example.com
+- **Issues**: GitHub Issues
+- **Discussions**: GitHub Discussions
+- **Email**: venantvr@gmail.com
 
 ## 🗺️ Roadmap
 
@@ -421,5 +410,5 @@ Full documentation is available at [https://pubsub-websocket.readthedocs.io](htt
 ---
 
 <div align="center">
-Made with ❤️ by the PubSub WebSocket team
+Made with ❤️ by the Python Publisher Subscriber team
 </div>
