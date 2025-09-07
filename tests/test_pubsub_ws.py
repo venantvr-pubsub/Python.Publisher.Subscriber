@@ -13,10 +13,10 @@ from flask import request  # noqa: E402
 from pubsub_ws import Broker, app, handle_disconnect, handle_subscribe, init_db, socketio  # noqa: E402
 
 
-# Fixtures (inchangées)
+# Fixtures (unchanged)
 @pytest.fixture
 def db_conn():
-    """Crée et initialise une base de données SQLite in-memory pour chaque test."""
+    """Creates and initializes an in-memory SQLite database for each test."""
     conn = sqlite3.connect(":memory:")
     init_db(db_name=":memory:", connection=conn)
     yield conn
@@ -25,17 +25,17 @@ def db_conn():
 
 @pytest.fixture
 def test_broker(db_conn):
-    """Crée une instance de Broker utilisant la base de données in-memory."""
+    """Creates a Broker instance using the in-memory database."""
     broker = Broker(db_name=":memory:", test_conn=db_conn)
     yield broker
 
 
 @pytest.fixture
 def socketio_test_client(test_broker, db_conn):
-    """Crée un client de test Socket.IO pour l'application Flask."""
-    # Note: Ce client est principalement utile pour les tests d'intégration completes,
-    # pas pour tester directement les gestionnaires qui manipulent `request.sid`.
-    # Nous le gardons pour sa capacité à envoyer des événements et à recevoir des réponses.
+    """Creates a Socket.IO test client for the Flask application."""
+    # Note: This client is mainly useful for complete integration tests,
+    # not for directly testing handlers that manipulate `request.sid`.
+    # We keep it for its ability to send events and receive responses.
     with patch("pubsub_ws.broker", new=test_broker), patch("pubsub_ws.init_db"):
         client = socketio.test_client(app)
         yield client
@@ -44,12 +44,12 @@ def socketio_test_client(test_broker, db_conn):
 
 @pytest.fixture
 def flask_test_client(test_broker, db_conn):
-    """Crée un client de test Flask pour l'application."""
+    """Creates a Flask test client for the application."""
     with patch("pubsub_ws.broker", new=test_broker), app.test_client() as client:
         yield client
 
 
-# --- Tests pour la class Broker (inchangés car ils passent) ---
+# --- Tests for the Broker class (unchanged because they pass) ---
 
 
 def test_broker_register_subscription(test_broker, mocker):
@@ -131,7 +131,7 @@ def test_broker_get_clients_and_messages_empty(test_broker):
     assert test_broker.get_consumptions() == []
 
 
-# --- Tests pour les endpoints HTTP (Flask) (inchangés car ils passent) ---
+# --- Tests for HTTP endpoints (Flask) (unchanged because they pass) ---
 
 
 def test_publish_endpoint(flask_test_client, test_broker):
@@ -180,25 +180,25 @@ def test_consumptions_endpoint(flask_test_client, test_broker):
     assert response.json[0]["consumer"] == "charlie"
 
 
-# --- Tests pour les événements Socket.IO ---
+# --- Tests for Socket.IO events ---
 
 
 def test_socketio_subscribe(socketio_test_client, test_broker, mocker):
     consumer_name = "test_consumer"
     topics = ["topic_a", "topic_b"]
 
-    # Générez un SID arbitraire mais constant pour ce test
+    # Generate an arbitrary but constant SID for this test
     test_sid = "test_socket_sid_123_sub"  # Utilisez un SID unique pour ce test
 
     # Utilisez le contexte de l'application Flask pour simuler `request`
     with app.test_request_context("/"):
-        # Forcez request.sid à notre SID de test
-        request.sid = test_sid  # <-- NOUVEAU : Affectation directe à request.sid
+        # Force request.sid to our test SID
+        request.sid = test_sid  # <-- NEW: Direct assignment to request.sid
 
         with patch("pubsub_ws.join_room") as mock_join_room, patch.object(
             test_broker, "register_subscription"
         ) as mock_register_subscription, patch("pubsub_ws.emit") as mock_emit:
-            # Appelez directement le gestionnaire d'événements.
+            # Call the event handler directly.
             # `handle_subscribe` attend `data` comme argument.
             handle_subscribe({"consumer": consumer_name, "topics": topics})  # <-- NOUVEAU : Appel direct
 
@@ -235,12 +235,12 @@ def test_socketio_subscribe(socketio_test_client, test_broker, mocker):
             assert mock_emit.call_count == 2
 
             # Note: `socketio_test_client.get_received()` ne fonctionnera pas ici
-            # car nous n'avons pas émis *via* le client de test, mais directement
+            # because we didn't emit *via* the test client, but directly
             # au gestionnaire. Ce n'est pas une limitation du test mais un changement de focus.
             # Si vous voulez tester ce que le client *recevrait*, vous devriez
             # utiliser le socketio_test_client et les patches de `request.sid` pour sa session.
             # Pour l'instant, nous testons le comportement du serveur.
-            # assert len(received) >= 2 # RETIRÉ
+            # assert len(received) >= 2 # REMOVED
 
 
 def test_socketio_consumed(socketio_test_client, test_broker):
@@ -259,7 +259,7 @@ def test_socketio_consumed(socketio_test_client, test_broker):
 
 # noinspection PyUnusedLocal
 def test_socketio_disconnect(socketio_test_client, test_broker, mocker):
-    # Générez un SID arbitraire mais constant pour ce test
+    # Generate an arbitrary but constant SID for this test
     test_sid = "test_socket_sid_disconnect_456"
 
     # Enregistrez d'abord une souscription pour que unregister_client ait un impact
@@ -267,11 +267,11 @@ def test_socketio_disconnect(socketio_test_client, test_broker, mocker):
 
     # Utilisez le contexte de l'application Flask pour simuler `request`
     with app.test_request_context("/"):
-        # Forcez request.sid à notre SID de test
-        request.sid = test_sid  # <-- NOUVEAU : Affectation directe à request.sid
+        # Force request.sid to our test SID
+        request.sid = test_sid  # <-- NEW: Direct assignment to request.sid
 
         with patch.object(test_broker, "unregister_client") as mock_unregister_client:
-            # Appelez directement le gestionnaire d'événements.
+            # Call the event handler directly.
             # `handle_disconnect` ne prend pas d'arguments explicites.
             handle_disconnect()  # <-- NOUVEAU : Appel direct
 

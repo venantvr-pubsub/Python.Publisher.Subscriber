@@ -16,15 +16,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# --- DÉBUT MODIFICATION POUR LA GESTION DE LA DB ET LES TESTS ---
+# --- START MODIFICATION FOR DB MANAGEMENT AND TESTS ---
 def init_db(db_name: str, connection: Optional[sqlite3.Connection] = None) -> None:
     """Initialize the SQLite database and run migrations if necessary."""
     if connection:
         conn = connection
-        close_conn = False  # Ne pas fermer la connection si elle est fournie
+        close_conn = False  # Don't close connection if provided
     else:
         conn = sqlite3.connect(db_name)
-        close_conn = True  # Fermer la connection si elle est créée ici
+        close_conn = True  # Close connection if created here
 
     try:
         c = conn.cursor()
@@ -39,11 +39,11 @@ def init_db(db_name: str, connection: Optional[sqlite3.Connection] = None) -> No
             else:
                 logger.error(f"[INIT DB] Migration script not found: {migration_script}")
     finally:
-        if close_conn and conn:  # Fermez la connection seulement si elle a été ouverte ici
+        if close_conn and conn:  # Close connection only if it was opened here
             conn.close()
 
 
-# Nom du fichier de la DB par défaut
+# Default DB file name
 DB_FILE_NAME = "pubsub.db"
 # --- FIN MODIFICATION POUR LA GESTION DE LA DB ET LES TESTS ---
 
@@ -52,13 +52,13 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
-# Initialisez la base de données réelle lors du démarrage de l'application
+# Initialize the real database when starting the application
 if __name__ == "__main__":
     init_db(DB_FILE_NAME)
 
 
 class Broker:
-    # Le broker peut recevoir une connection existante pour les tests
+    # The broker can receive an existing connection for tests
     def __init__(self, db_name: str, test_conn: Optional[sqlite3.Connection] = None):
         """
         Initialize the Broker with a database name.
@@ -67,17 +67,17 @@ class Broker:
         :param test_conn: An optional existing SQLite connection for testing purposes.
         """
         self.db_name = db_name
-        self._test_conn = test_conn  # Stocke la connection de test
+        self._test_conn = test_conn  # Store test connection
 
     def _get_db_connection(self) -> sqlite3.Connection:
         """Helper to get a database connection. Uses test_conn if available."""
         if self._test_conn:
-            return self._test_conn  # Retourne la connection de test
+            return self._test_conn  # Return test connection
         return sqlite3.connect(self.db_name)
 
     def _close_db_connection(self, conn: sqlite3.Connection) -> None:
         """Helper to close a database connection, if it's not a test connection."""
-        if conn != self._test_conn:  # Ne ferme pas la connection de test
+        if conn != self._test_conn:  # Don't close test connection
             conn.close()
 
     def register_subscription(self, sid: str, consumer: str, topic: str) -> None:
@@ -105,7 +105,7 @@ class Broker:
                 conn.rollback()  # Rollback on error
         finally:
             if conn:
-                self._close_db_connection(conn)  # Utilisez la nouvelle méthode de fermeture
+                self._close_db_connection(conn)  # Use the new close method
 
     def unregister_client(self, sid: str) -> None:
         conn = None
@@ -272,9 +272,9 @@ class Broker:
                 self._close_db_connection(conn)
 
 
-# Créez l'instance du Broker avec le nom du fichier de base de données réel
-# Cette ligne est exécutée uniquement si __name__ == "__main__"
-# Pour les tests, le Broker est instancié via la fixture
+# Create the Broker instance with the real database filename
+# This line is executed only if __name__ == "__main__"
+# For tests, the Broker is instantiated via the fixture
 broker = Broker(DB_FILE_NAME)
 
 
@@ -291,7 +291,7 @@ def publish() -> Tuple[Dict[str, str], int]:
         return jsonify({"status": "error", "message": "Missing topic, message_id, message, or producer"}), 400
 
     logger.info(f"Publishing message {message_id} to topic {topic} by {producer}")
-    # Le broker réel sera utilisé ici, pas le mock
+    # The real broker will be used here, not the mock
     broker.save_message(topic=topic, message_id=message_id, message=message, producer=producer)
 
     payload = {"topic": topic, "message_id": message_id, "message": message, "producer": producer}
@@ -375,10 +375,10 @@ def handle_consumed(data: Dict[str, Any]) -> None:
 
 
 @socketio.on("disconnect")
-def handle_disconnect() -> None:  # <-- Signature sans argument explicit pour le SID
+def handle_disconnect() -> None:  # <-- Signature without explicit argument for the SID
     """Handle client disconnection."""
     # noinspection PyUnresolvedReferences
-    sid = request.sid  # Toujours récupérer le SID via request.sid
+    sid = request.sid  # Always get SID via request.sid
     logger.info(f"Client disconnected (SID: {sid})")
     broker.unregister_client(sid)
 
