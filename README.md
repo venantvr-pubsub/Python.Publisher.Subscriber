@@ -12,8 +12,17 @@
 ![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)
 ![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
 
-A high-performance, real-time Publisher-Subscriber system built with Flask,
-Flask-SocketIO, and SQLite.
+A
+high-performance,
+real-time
+Publisher-Subscriber
+system
+built
+with
+Flask,
+Flask-SocketIO,
+and
+SQLite.
 
 [Features](#-features) • [Installation](#-installation) •
 [Quick Start](#-quick-start) • [Contributing](#-contributing)
@@ -24,20 +33,102 @@ Flask-SocketIO, and SQLite.
 
 ## 🚀 Features
 
-- **Real-time Communication**: WebSocket-based pub/sub messaging with instant
-  delivery
-- **Multiple Topics**: Support for subscribing to multiple topics simultaneously
-- **Persistent Storage**: SQLite database for message history and consumption
-  tracking
-- **Web Interface**: Interactive web client for testing and monitoring
-- **Python Client Library**: Easy-to-use Python client for integration
-- **RESTful API**: HTTP endpoints for publishing messages
-- **Live Monitoring**: Real-time monitoring of connected clients and message
-  consumption
-- **Docker Support**: Ready-to-deploy Docker configuration
 -
 *
-*Comprehensive
+*Real-time
+Communication
+**:
+WebSocket-based
+pub/sub
+messaging
+with
+instant
+delivery
+-
+*
+*Multiple
+Topics
+**:
+Support
+for
+subscribing
+to
+multiple
+topics
+simultaneously
+-
+*
+*Persistent
+Storage
+**:
+SQLite
+database
+for
+message
+history
+and
+consumption
+tracking
+-
+*
+*Web
+Interface
+**:
+Interactive
+web
+client
+for
+testing
+and
+monitoring
+-
+*
+*Python
+Client
+Library
+**:
+Easy-to-use
+Python
+client
+for
+integration
+-
+*
+*RESTful
+API
+**:
+HTTP
+endpoints
+for
+publishing
+messages
+-
+*
+*Live
+Monitoring
+**:
+Real-time
+monitoring
+of
+connected
+clients
+and
+message
+consumption
+-
+*
+*Docker
+Support
+**:
+Ready-to-deploy
+Docker
+configuration
+-
+
+*
+
+*
+Comprehensive
 Testing
 **:
 Extensive
@@ -45,14 +136,43 @@ test
 suite
 with
 pytest
-- **Type Safety**: Full type hints and mypy validation
-- **Production Ready**: Health checks, logging, and error handling
+
+-
+*
+*Type
+Safety
+**:
+Full
+type
+hints
+and
+mypy
+validation
+-
+*
+*Production
+Ready
+**:
+Health
+checks,
+logging,
+and
+error
+handling
 
 ## 📋 Requirements
 
-- Python 3.8 or higher
-- pip package manager
-- SQLite3
+-
+Python
+3.8
+or
+higher
+-
+pip
+package
+manager
+-
+SQLite3
 
 ## 🔧 Installation
 
@@ -95,7 +215,12 @@ python src/pubsub_ws.py
 make run-server
 ```
 
-The server will start on `http://localhost:5000`
+The
+server
+will
+start
+on
+`http://localhost:5000`
 
 ### 2. Publish Messages
 
@@ -147,7 +272,11 @@ client.start()
 
 #### Using Web Interface
 
-Open your browser at `http://localhost:5000/client.html`
+Open
+your
+browser
+at
+`http://localhost:5000/client.html`
 
 ## 📁 Project Structure
 
@@ -196,7 +325,6 @@ pytest tests/test_pubsub_ws.py -v
 pytest-watch tests/ -v
 ```
 
-
 ## 🛠️ Development
 
 ### Setup Development Environment
@@ -233,28 +361,72 @@ make docker-run   # Run Docker container
 
 ## 📊 Database Schema
 
-The application uses SQLite with the following schema:
+The
+application
+uses
+SQLite
+with
+the
+following
+schema:
 
 ### Messages Table
 
-- `id`: Primary key
-- `topic`: Message topic
-- `message`: Message content
-- `timestamp`: Creation time
+-
+`id`:
+Primary
+key
+-
+`topic`:
+Message
+topic
+-
+`message`:
+Message
+content
+-
+`timestamp`:
+Creation
+time
 
 ### Subscriptions Table
 
-- `id`: Primary key
-- `consumer`: Consumer name
-- `topic`: Subscribed topic
-- `timestamp`: Subscription time
+-
+`id`:
+Primary
+key
+-
+`consumer`:
+Consumer
+name
+-
+`topic`:
+Subscribed
+topic
+-
+`timestamp`:
+Subscription
+time
 
 ### Consumptions Table
 
-- `id`: Primary key
-- `consumer`: Consumer name
-- `message_id`: Reference to message
-- `consumed_at`: Consumption timestamp
+-
+`id`:
+Primary
+key
+-
+`consumer`:
+Consumer
+name
+-
+`message_id`:
+Reference
+to
+message
+-
+`consumed_at`:
+Consumption
+timestamp
 
 ## 🔌 API Reference
 
@@ -262,7 +434,12 @@ The application uses SQLite with the following schema:
 
 #### POST /publish
 
-Publish a message to a topic.
+Publish
+a
+message
+to
+a
+topic.
 
 ```json
 {
@@ -273,35 +450,60 @@ Publish a message to a topic.
 
 #### GET /health
 
-Health check endpoint.
+Health
+check
+endpoint.
 
 ### WebSocket Events
 
 #### Client → Server
 
-- `subscribe`: Subscribe to topics
+-
+`subscribe`:
+Subscribe
+to
+topics
 
-  ```json
-  {
-    "consumer": "string",
-    "topics": ["string"]
-  }
-  ```
+```json
+{
+  "consumer": "string",
+  "topics": ["string"]
+}
+```
 
-- `publish`: Publish message via WebSocket
+-
+`publish`:
+Publish
+message
+via
+WebSocket
 
-  ```json
-  {
-    "topic": "string",
-    "message": "string"
-  }
-  ```
+```json
+{
+  "topic": "string",
+  "message": "string"
+}
+```
 
 #### Server → Client
 
-- `message`: Receive subscribed messages
-- `client_list`: Updated list of connected clients
-- `consumption_update`: Message consumption notifications
+-
+`message`:
+Receive
+subscribed
+messages
+-
+`client_list`:
+Updated
+list
+of
+connected
+clients
+-
+`consumption_update`:
+Message
+consumption
+notifications
 
 ## 🐳 Docker Deployment
 
@@ -342,72 +544,236 @@ curl http://localhost:5000/health
 
 ### Metrics
 
-The application provides real-time metrics through the web interface:
+The
+application
+provides
+real-time
+metrics
+through
+the
+web
+interface:
 
-- Connected clients count
-- Messages per topic
-- Consumption rate
-- Active subscriptions
+-
+Connected
+clients
+count
+-
+Messages
+per
+topic
+-
+Consumption
+rate
+-
+Active
+subscriptions
 
 ## 🔒 Security
 
-- Input validation on all endpoints
-- SQL injection prevention via parameterized queries
-- XSS protection in web interface
-- Rate limiting support
-- CORS configuration available
+-
+Input
+validation
+on
+all
+endpoints
+-
+SQL
+injection
+prevention
+via
+parameterized
+queries
+-
+XSS
+protection
+in
+web
+interface
+-
+Rate
+limiting
+support
+-
+CORS
+configuration
+available
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions
+are
+welcome!
+Please
+follow
+these
+steps:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1.
+Fork
+the
+repository
+2.
+Create
+a
+feature
+branch (
+`git checkout -b feature/amazing-feature`)
+3.
+Commit
+your
+changes (
+`git commit -m 'Add amazing feature'`)
+4.
+Push
+to
+the
+branch (
+`git push origin feature/amazing-feature`)
+5.
+Open
+a
+Pull
+Request
 
 ### Development Guidelines
 
-- Follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide
-- Add tests for new features
-- Update documentation as needed
-- Use type hints
-- Run `make pre-commit` before committing
+-
+Follow [PEP 8](https://www.python.org/dev/peps/pep-0008/)
+style
+guide
+-
+Add
+tests
+for
+new
+features
+-
+Update
+documentation
+as
+needed
+-
+Use
+type
+hints
+-
+Run
+`make pre-commit`
+before
+committing
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for
+This
+project
+is
+licensed
+under
+the
+MIT
+License -
+see
+the
+LICENSE
+file
+for
 details.
 
 ## 🙏 Acknowledgments
 
-- Flask team for the excellent web framework
-- Socket.IO team for real-time communication
-- All contributors and users of this project
+-
+Flask
+team
+for
+the
+excellent
+web
+framework
+-
+Socket.IO
+team
+for
+real-time
+communication
+-
+All
+contributors
+and
+users
+of
+this
+project
 
 ## 📚 Documentation
 
-Full documentation is available in the `docs/` directory.
+Full
+documentation
+is
+available
+in
+the
+`docs/`
+directory.
 
 ## 📧 Support
 
-- **Issues**: GitHub Issues
-- **Discussions**: GitHub Discussions
-- **Email**: <venantvr@gmail.com>
+-
+*
+*Issues
+**:
+GitHub
+Issues
+-
+*
+*Discussions
+**:
+GitHub
+Discussions
+-
+*
+*Email
+**: <venantvr@gmail.com>
 
 ## 🗺️ Roadmap
 
-- [ ] Redis backend support
-- [ ] Message persistence options
-- [ ] Authentication and authorization
-- [ ] Message encryption
-- [ ] Horizontal scaling support
-- [ ] GraphQL API
-- [ ] Admin dashboard
-- [ ] Message replay functionality
-- [ ] Dead letter queue
-- [ ] Prometheus metrics export
+- [ ] 
+  Redis
+  backend
+  support
+- [ ] 
+  Message
+  persistence
+  options
+- [ ] 
+  Authentication
+  and
+  authorization
+- [ ] 
+  Message
+  encryption
+- [ ] 
+  Horizontal
+  scaling
+  support
+- [ ] 
+  GraphQL
+  API
+- [ ] 
+  Admin
+  dashboard
+- [ ] 
+  Message
+  replay
+  functionality
+- [ ] 
+  Dead
+  letter
+  queue
+- [ ] 
+  Prometheus
+  metrics
+  export
 
 ---
 

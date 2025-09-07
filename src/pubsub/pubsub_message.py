@@ -11,7 +11,8 @@ class PubSubMessage:
     producer: str
 
     @staticmethod
-    def new(topic: str, message: Any, producer: str, message_id: Optional[str] = None) -> "PubSubMessage":
+    def new(topic: str, message: Any, producer: str,
+            message_id: Optional[str] = None) -> "PubSubMessage":
         """
         Create a new PubSubMessage instance.
 
@@ -21,7 +22,8 @@ class PubSubMessage:
         :param message_id: Unique message ID (optional, defaults to UUID)
         :return: PubSubMessage instance
         """
-        return PubSubMessage(topic=topic, message_id=message_id or str(uuid4()), message=message, producer=producer)
+        return PubSubMessage(topic=topic, message_id=message_id or str(uuid4()), message=message,
+                             producer=producer)
 
     def to_dict(self) -> Dict[str, Any]:
         """

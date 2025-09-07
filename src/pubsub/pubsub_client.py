@@ -26,7 +26,8 @@ class PubSubClient:
         self.consumer = consumer
         self.topics = topics
         self.handlers: Dict[str, Callable[[Any], None]] = {}  # topic → function
-        self.message_queue: queue.Queue[Any] = queue.Queue()  # Queue for processing messages sequentially
+        self.message_queue: queue.Queue[
+            Any] = queue.Queue()  # Queue for processing messages sequentially
         self.running = False
 
         # Create Socket.IO client with explicit reconnection settings
@@ -94,7 +95,8 @@ class PubSubClient:
                 # Notify consumption
                 self.sio.emit(
                     "consumed",
-                    {"consumer": self.consumer, "topic": topic, "message_id": message_id, "message": message},
+                    {"consumer": self.consumer, "topic": topic, "message_id": message_id,
+                     "message": message},
                 )
 
                 self.message_queue.task_done()
@@ -105,7 +107,8 @@ class PubSubClient:
 
     def on_disconnect(self) -> None:
         """Handle disconnection from the server."""
-        logger.info(f"[{self.consumer}] Disconnected from server. Reconnection will be attempted automatically.")
+        logger.info(
+            f"[{self.consumer}] Disconnected from server. Reconnection will be attempted automatically.")
         self.running = False  # Stop queue processing until reconnected
 
     def on_new_message(self, data: Dict[str, Any]) -> None:
@@ -131,7 +134,8 @@ class PubSubClient:
         except requests.exceptions.ConnectionError as e:
             logger.error(f"[{self.consumer}] Connection error during publish: {e}")
         except requests.exceptions.HTTPError as e:
-            logger.error(f"[{self.consumer}] HTTP error during publish: {e.response.status_code} - {e.response.text}")
+            logger.error(
+                f"[{self.consumer}] HTTP error during publish: {e.response.status_code} - {e.response.text}")
         except Exception as e:
             logger.error(f"[{self.consumer}] An unexpected error occurred during publish: {e}")
 

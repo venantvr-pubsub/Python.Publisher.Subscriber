@@ -30,7 +30,8 @@ def init_db(db_name: str, connection: Optional[sqlite3.Connection] = None) -> No
         c = conn.cursor()
         c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='messages'")
         if not c.fetchone():
-            logger.info(f"[INIT DB] Messages table missing in {db_name}, running migration script...")
+            logger.info(
+                f"[INIT DB] Messages table missing in {db_name}, running migration script...")
             migration_script = "migrations/001_add_message_id_and_producer.sql"
             if path.exists(migration_script):
                 with open(migration_script) as f:
@@ -97,7 +98,8 @@ class Broker:
 
             socketio.emit(
                 "new_client",
-                {"consumer": consumer, "topic": topic, "connected_at": time.time()},  # Add timestamp for the UI
+                {"consumer": consumer, "topic": topic, "connected_at": time.time()},
+                # Add timestamp for the UI
             )
         except sqlite3.Error as e:
             logger.error(f"Database error during subscription registration: {e}")
@@ -232,7 +234,8 @@ class Broker:
             )
             rows = c.fetchall()
             messages = [
-                {"topic": r[0], "message_id": r[1], "message": json.loads(r[2]), "producer": r[3], "timestamp": r[4]}
+                {"topic": r[0], "message_id": r[1], "message": json.loads(r[2]), "producer": r[3],
+                 "timestamp": r[4]}
                 for r in rows
             ]
             logger.info(f"Retrieved {len(messages)} messages")
@@ -259,7 +262,8 @@ class Broker:
             )
             rows = c.fetchall()
             consumptions = [
-                {"consumer": r[0], "topic": r[1], "message_id": r[2], "message": json.loads(r[3]), "timestamp": r[4]}
+                {"consumer": r[0], "topic": r[1], "message_id": r[2], "message": json.loads(r[3]),
+                 "timestamp": r[4]}
                 for r in rows
             ]
             logger.info(f"Retrieved {len(consumptions)} consumption events")
@@ -288,7 +292,8 @@ def publish() -> Tuple[Dict[str, str], int]:
 
     if not all([topic, message_id, message, producer]):
         logger.error("Publish failed: Missing topic, message_id, message, or producer")
-        return jsonify({"status": "error", "message": "Missing topic, message_id, message, or producer"}), 400
+        return jsonify(
+            {"status": "error", "message": "Missing topic, message_id, message, or producer"}), 400
 
     logger.info(f"Publishing message {message_id} to topic {topic} by {producer}")
     # The real broker will be used here, not the mock

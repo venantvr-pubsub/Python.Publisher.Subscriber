@@ -8,12 +8,12 @@ version = "1.0.0"
 description = "A real-time Publisher-Subscriber system using WebSockets"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = { text = "MIT" }
 authors = [
-    {name = "venantvr", email = "venantvr@gmail.com"}
+    { name = "venantvr", email = "venantvr@gmail.com" }
 ]
 maintainers = [
-    {name = "venantvr", email = "venantvr@gmail.com"}
+    { name = "venantvr", email = "venantvr@gmail.com" }
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -128,11 +128,11 @@ python_functions = ["test_*"]
 line-length = 100
 target-version = "py38"
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "B", # flake8-bugbear
     "C4", # flake8-comprehensions
     "UP", # pyupgrade
 ]

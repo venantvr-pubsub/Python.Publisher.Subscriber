@@ -78,7 +78,8 @@ class PubSubClient:
         logger.info(f"Publishing to topic {topic}: {message} with ID {message_id}")
         resp = requests.post(
             f"{BASE_URL}/publish",
-            json={"topic": topic, "message": message, "producer": self.consumer_name, "message_id": message_id},
+            json={"topic": topic, "message": message, "producer": self.consumer_name,
+                  "message_id": message_id},
             timeout=10,
         )
         logger.info(f"Publish response: {resp.json()}")
