@@ -34,21 +34,15 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
-coverage/
-htmlcov/
+# Unit test reports
 .tox/
 .nox/
-.coverage
-.coverage.*
 .cache
 nosetests.xml
-coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
 
 # Translations
 *.mo
@@ -163,9 +157,6 @@ logs/
 *.swp
 *~
 
-# Coverage reports (now handled by coverage/ directory above)
-# coverage.json
-# .coverage.*
 
 # Pre-commit
 .pre-commit-config.yaml.lock

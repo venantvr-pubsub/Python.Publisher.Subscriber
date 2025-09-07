@@ -90,7 +90,6 @@ Unsure where to begin contributing? You can start by looking through these
    make test        # Run tests
    make lint        # Check code style
    make format      # Format code
-   make test-cov    # Check test coverage
    ```
 
 5. **Commit your changes:**
@@ -132,7 +131,13 @@ Unsure where to begin contributing? You can start by looking through these
 ## Testing
 
 - Write tests for all new functionality.
-- Maintain or improve test coverage.
+-
+Write
+comprehensive
+tests
+for
+new
+features.
 - Run the full test suite before submitting a PR.
 - Tests should be deterministic and not rely on external services.
 

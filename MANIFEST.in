@@ -8,7 +8,6 @@ include pyproject.toml
 include Makefile
 include Dockerfile
 include docker-compose.yml
-include .coveragerc
 include .gitignore
 include .pre-commit-config.yaml
 
@@ -25,6 +24,3 @@ global-exclude *.py[co]
 global-exclude .DS_Store
 global-exclude *.swp
 global-exclude *~
-global-exclude .coverage
-global-exclude coverage.xml
-global-exclude coverage.json

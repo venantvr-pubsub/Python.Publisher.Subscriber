@@ -35,7 +35,16 @@ Flask-SocketIO, and SQLite.
 - **Live Monitoring**: Real-time monitoring of connected clients and message
   consumption
 - **Docker Support**: Ready-to-deploy Docker configuration
-- **Comprehensive Testing**: Full test coverage with pytest
+-
+*
+*Comprehensive
+Testing
+**:
+Extensive
+test
+suite
+with
+pytest
 - **Type Safety**: Full type hints and mypy validation
 - **Production Ready**: Health checks, logging, and error handling
 
@@ -155,10 +164,6 @@ Python.Publisher.Subscriber/
 │   ├── test_pubsub_ws.py
 │   └── test_pubsub_client.py
 ├── config/                   # Configuration files
-├── coverage/                 # Coverage reports
-│   ├── htmlcov/             # HTML coverage reports
-│   ├── coverage.xml         # XML coverage report
-│   └── coverage.json        # JSON coverage report
 ├── docs/                     # Documentation
 ├── migrations/               # Database migrations
 ├── static/                   # Static web files
@@ -183,8 +188,6 @@ Python.Publisher.Subscriber/
 # Run all tests
 make test
 
-# Run with coverage
-make test-cov
 
 # Run specific test file
 pytest tests/test_pubsub_ws.py -v
@@ -193,15 +196,6 @@ pytest tests/test_pubsub_ws.py -v
 pytest-watch tests/ -v
 ```
 
-### Coverage Report
-
-After running tests with coverage, view the HTML report:
-
-```bash
-open coverage/htmlcov/index.html  # On macOS
-xdg-open coverage/htmlcov/index.html  # On Linux
-start coverage/htmlcov/index.html  # On Windows
-```
 
 ## 🛠️ Development
 
@@ -229,7 +223,6 @@ make pre-commit
 ```bash
 make help         # Show all available commands
 make test         # Run tests
-make test-cov     # Run tests with coverage
 make lint         # Run linting checks
 make format       # Format code
 make clean        # Clean generated files
