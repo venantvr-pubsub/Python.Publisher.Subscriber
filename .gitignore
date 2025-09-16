@@ -163,3 +163,4 @@ logs/
 
 # Ruff
 .ruff_cache/
+/.claude/
