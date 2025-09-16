@@ -100,7 +100,7 @@ def main() -> None:
     """Entry point for the pubsub client demo."""
     client = PubSubClient(consumer_name="demo-client", topics=["test"])
     client.connect()
-    
+
     try:
         client.run_forever()
     except KeyboardInterrupt:

@@ -81,7 +81,8 @@ class PubSubClient:
                 producer = data.get("producer")
 
                 logger.info(
-                    f"[{self.consumer}] Processing message from topic [{topic}]: {message} (from {producer}, ID={message_id})"
+                    f"[{self.consumer}] Processing message from topic [{topic}]: "
+                    f"{message} (from {producer}, ID={message_id})"
                 )
 
                 if topic in self.handlers:
@@ -108,7 +109,9 @@ class PubSubClient:
     def on_disconnect(self) -> None:
         """Handle disconnection from the server."""
         logger.info(
-            f"[{self.consumer}] Disconnected from server. Reconnection will be attempted automatically.")
+            f"[{self.consumer}] Disconnected from server. "
+            "Reconnection will be attempted automatically."
+        )
         self.running = False  # Stop queue processing until reconnected
 
     def on_new_message(self, data: Dict[str, Any]) -> None:
@@ -135,7 +138,9 @@ class PubSubClient:
             logger.error(f"[{self.consumer}] Connection error during publish: {e}")
         except requests.exceptions.HTTPError as e:
             logger.error(
-                f"[{self.consumer}] HTTP error during publish: {e.response.status_code} - {e.response.text}")
+                f"[{self.consumer}] HTTP error during publish: "
+                f"{e.response.status_code} - {e.response.text}"
+            )
         except Exception as e:
             logger.error(f"[{self.consumer}] An unexpected error occurred during publish: {e}")
 
