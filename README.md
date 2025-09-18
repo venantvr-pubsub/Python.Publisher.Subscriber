@@ -173,7 +173,6 @@ Python.Publisher.Subscriber/
 # Run all tests
 make test
 
-
 # Run specific test file
 pytest tests/test_pubsub_ws.py -v
 
