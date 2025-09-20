@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Specific business class for text messages
     class TextMessage extends BaseMessage {
         constructor(text, producer, message_id) {
-            super(producer, { text: text }, message_id);
+            super(producer, {text: text}, message_id);
         }
     }
 
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         fetch("/publish", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         })
             .then(r => {
