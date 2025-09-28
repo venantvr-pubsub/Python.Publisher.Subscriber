@@ -59,7 +59,7 @@ Repository = "https://github.com/venantvr/Python.Publisher.Subscriber.git"
 Issues = "https://github.com/venantvr/Python.Publisher.Subscriber/issues"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 include-package-data = true
 zip-safe = false
 

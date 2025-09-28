@@ -16,6 +16,7 @@ BASE_URL = "http://localhost:5000"
 
 # noinspection PyMethodMayBeStatic
 class PubSubClient:
+
     def __init__(self, consumer_name: str, topics: List[str]):
         """
         Initialize the PubSub client.
