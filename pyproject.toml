@@ -1,19 +1,22 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = [
+    "setuptools>=61.0",
+    "wheel",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "Python.Publisher.Subscriber"
+name = "python_publisher_subscriber"
 version = "1.0.0"
 description = "A real-time Publisher-Subscriber system using WebSockets"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 authors = [
-    { name = "venantvr", email = "venantvr@gmail.com" }
+    { name = "venantvr", email = "venantvr@gmail.com" },
 ]
 maintainers = [
-    { name = "venantvr", email = "venantvr@gmail.com" }
+    { name = "venantvr", email = "venantvr@gmail.com" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -58,17 +61,21 @@ Documentation = "https://python-publisher-subscriber.readthedocs.io"
 Repository = "https://github.com/venantvr/Python.Publisher.Subscriber.git"
 Issues = "https://github.com/venantvr/Python.Publisher.Subscriber/issues"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
-include-package-data = true
-zip-safe = false
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [project.scripts]
 pubsub-server = "pubsub_ws:main"
 pubsub-client = "client:main"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -76,7 +83,16 @@ addopts = [
     "-ra",
     "--strict-markers",
 ]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+testpaths = [
+    "tests",
+]
+python_files = [
+    "test_*.py",
+    "*_test.py",
+]
+python_classes = [
+    "Test*",
+]
+python_functions = [
+    "test_*",
+]
