@@ -381,3 +381,7 @@ Full documentation is available in the `docs/` directory.
 <div align="center">
 Made with ❤️ by the Python Publisher Subscriber team
 </div>
+
+## Stack
+
+[![Stack](https://skillicons.dev/icons?i=py,flask,redis,sqlite,docker,prometheus,graphql,js&theme=dark)](https://skillicons.dev)
